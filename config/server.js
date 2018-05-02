@@ -8,21 +8,33 @@ const dbPass = process.env.DB_PASS || '';
 const dbCred = dbUser.length > 0 || dbPass.length > 0 ? `${dbUser}:${dbPass}@` : '';
 const dbUrl = `mongodb://${dbCred}${dbHost}:${dbPort}/${dbName}`;
 
+const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3001/api/v1';
+const AJAX_BASE_URL = process.env.AJAX_BASE_URL || 'http://localhost:3001/ajax';
+const STORE_BASE_URL = process.env.STORE_BASE_URL || 'http://localhost:3000';
+const API_LISTEN_PORT = process.env.API_LISTEN_PORT || 3001;
+const STORE_LISTEN_PORT = process.env.STORE_LISTEN_PORT || 3000;
+const NODE_ENV = process.env.NODE_ENV || 'development';
+
+let isDeveloperMode = false;
+if(NODE_ENV === 'development') {
+  isDeveloperMode = true;
+}
+
 module.exports = {
   // used by Store (server side)
-  apiBaseUrl: `http://localhost:3001/api/v1`,
+  apiBaseUrl: API_BASE_URL,
 
   // used by Store (server and client side)
-  ajaxBaseUrl: `http://localhost:3001/ajax`,
+  ajaxBaseUrl: AJAX_BASE_URL,
 
   // Access-Control-Allow-Origin
-  storeBaseUrl: `http://localhost:3000`,
+  storeBaseUrl: STORE_BASE_URL,
 
   // used by API
   adminLoginUrl: '/admin/login',
 
-  apiListenPort: 3001,
-  storeListenPort: 3000,
+  apiListenPort: API_LISTEN_PORT,
+  storeListenPort: STORE_LISTEN_PORT,
 
   // used by API
   mongodbServerUrl: dbUrl,
@@ -61,5 +73,5 @@ module.exports = {
   // used by API
   orderStartNumber: 1000,
 
-  developerMode: true
+  developerMode: isDeveloperMode
 }
