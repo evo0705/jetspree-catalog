@@ -73,6 +73,11 @@ module.exports = {
       banner: `Created: ${new Date().toUTCString()}`,
       raw: false,
       entryOnly: false
-    })
+    }),
+    new webpack.DefinePlugin({
+      "process.env": {
+        AJAX_BASE_URL: JSON.stringify(process.env.AJAX_BASE_URL || 'http://localhost:3001/ajax')
+      },
+    }),
   ]
 };

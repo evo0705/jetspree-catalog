@@ -104,6 +104,12 @@ module.exports = {
       banner: `Created: ${new Date().toUTCString()}`,
       raw: false,
       entryOnly: false
-    })
+    }),
+    new webpack.DefinePlugin({
+      "process.env": {
+        API_BASE_URL:       JSON.stringify(process.env.API_BASE_URL || 'http://localhost:3001/api/v1'),
+        API_WEB_SOCKET_URL: JSON.stringify(process.env.API_WEB_SOCKET_URL || 'ws://localhost:3001'),
+      },
+    }),
   ]
 };
