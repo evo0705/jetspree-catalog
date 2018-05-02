@@ -43,8 +43,9 @@
     "theme:build": "babel theme/src -d theme/dist --quiet && npm run webpack:store",
     "build": "npm run compile && npm run theme:build && npm run webpack:admin",
     "build:watch": "npm run compile:watch & npm run webpack:store:watch & npm run webpack:admin:watch",
+    "heroku-postbuild": "rm -rf ./dist; npm run build",
     "start-api": "node src/api/server/index.js",
-    "start-store": "rm -rf ./dist; npm run build; node dist/store/server/index.js",
+    "start-store": "node dist/store/server/index.js",
     "start": "npm run start-api & npm run start-store"
   },
   "dependencies": {

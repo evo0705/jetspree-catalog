@@ -42,8 +42,7 @@ app.get('*', redirects);
 app.use(responseTime());
 app.use(cookieParser(settings.cookieSecretKey));
 app.get('*', pageRendering);
-console.log("storeListenPort", settings.storeListenPort)
-console.log("process.env.PORT", process.env.PORT)
+
 const server = app.listen(settings.storeListenPort, () => {
   const serverAddress = server.address();
   winston.info(`Store running at http://localhost:${serverAddress.port}`);
