@@ -11,8 +11,8 @@ const dbUrl = `mongodb://${dbCred}${dbHost}:${dbPort}/${dbName}`;
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3001/api/v1';
 const AJAX_BASE_URL = process.env.AJAX_BASE_URL || 'http://localhost:3001/ajax';
 const STORE_BASE_URL = process.env.STORE_BASE_URL || 'http://localhost:3000';
-const API_LISTEN_PORT = process.env.API_LISTEN_PORT || 3001;
-const STORE_LISTEN_PORT = process.env.STORE_LISTEN_PORT || 3000;
+const API_LISTEN_PORT = process.env.PORT || 3001;
+const STORE_LISTEN_PORT = process.env.PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
 let isDeveloperMode = false;
