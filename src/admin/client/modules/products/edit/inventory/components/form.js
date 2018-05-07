@@ -16,7 +16,7 @@ import Divider from 'material-ui/Divider';
 const validate = values => {
   const errors = {}
   const requiredFields = ['name']
-  const numberFields = ['regular_price', 'sale_price', 'stock_quantity', 'weight']
+  const numberFields = ['regular_price', 'sale_price', 'stock_quantity', 'weight', 'service_fee']
 
   requiredFields.map(field => {
     if (values && !values[field]) {
@@ -100,6 +100,9 @@ const ProductInventoryForm = ({ handleSubmit, pristine, reset, submitting, initi
                     textFieldStyle={{ width:'100%' }}
                     format={(value, name) => value === '' ? null : value}
                     floatingLabelText={messages.products_dateSaleTo} />
+                </div>
+                <div className="col-xs-6">
+                  <Field name="service_fee" component={TextField} floatingLabelText={messages.products_service_fee} fullWidth={true}/>
                 </div>
               </div>
             </div>

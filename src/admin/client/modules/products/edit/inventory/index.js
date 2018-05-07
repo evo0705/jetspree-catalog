@@ -17,6 +17,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         id: values.id,
         regular_price: values.regular_price,
         sale_price: values.sale_price,
+        service_fee: values.service_fee,
         date_sale_from: values.date_sale_from,
         date_sale_to: values.date_sale_to,
         sku: values.sku,

@@ -12,11 +12,9 @@ const ImagePlaceholder = <FontIcon style={{fontSize: 30, color: '#cccccc'}} clas
 const ItemImage = ({ images }) => {
   if(images && images.length > 0) {
     let imageUrl = null;
-    if(images[0].external_id) {
-      console.log("Cloudinary")
+    if(images[0].external_id !== null) {
       imageUrl = helper.getCloudinaryThumbnailUrl(images[0].url, THUMBNAIL_WIDTH);
-    } else {
-      console.log("NOPE")
+    } else {      
       imageUrl = helper.getThumbnailUrl(images[0].url, THUMBNAIL_WIDTH);
     }
     return <img src={imageUrl} className={style.image} />
