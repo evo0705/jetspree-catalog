@@ -4,12 +4,11 @@ const path = require('path');
 const url = require('url');
 const settings = require('../../lib/settings');
 const mongo = require('../../lib/mongo');
-const utils = require('../../lib/utils');
 const parse = require('../../lib/parse');
-const SettingsService = require('../settings/settings');
 const ObjectID = require('mongodb').ObjectID;
-const formidable = require('formidable');
 const fse = require('fs-extra');
+const FileSystemService = require('./fileSystem');
+const CloudinaryService = require('./cloudinary');
 
 class ProductImagesService {
   constructor() {}
@@ -18,27 +17,19 @@ class ProductImagesService {
     return { 'error': true, 'message': err.toString() };
   }
 
-  getImages(productId) {
+  async getImages(productId) {
     if(!ObjectID.isValid(productId)) {
       return Promise.reject('Invalid identifier');
     }
+    let productImages = [];
     let productObjectID = new ObjectID(productId);
 
-    return SettingsService.getSettings().then(generalSettings =>
-      mongo.db.collection('products').findOne({ _id: productObjectID }, {fields: {images: 1}}).then(product => {
-        if(product && product.images && product.images.length > 0) {
-          let images = product.images.map(image => {
-            image.url = url.resolve(generalSettings.domain, settings.productsUploadUrl + '/' + product._id + '/' + image.filename);
-            return image;
-          })
-
-          images = images.sort((a,b) => (a.position - b.position ));
-          return images;
-        } else {
-          return []
-        }
-      })
-    )
+    if(settings.enableCloudinary === true) { // use cloudinary to store images
+      productImages = await CloudinaryService.getImages(productObjectID);
+    } else { // use filesystem to store images
+      productImages = await FileSystemService.getImages(productObjectID);
+    }
+    return productImages;
   }
 
   deleteImage(productId, imageId) {
@@ -68,53 +59,45 @@ class ProductImagesService {
   }
 
   async addImage(req, res) {
+    let uploadedImages = null
     const productId = req.params.productId;
+    const productObjectID = new ObjectID(productId);
+
     if(!ObjectID.isValid(productId)) {
       res.status(500).send(this.getErrorMessage('Invalid identifier'));
       return;
     }
 
-    let uploadedFiles = [];
-    const productObjectID = new ObjectID(productId);
-    const uploadDir = path.resolve(settings.productsUploadPath + '/' + productId);
-    fse.ensureDirSync(uploadDir);
+    if(settings.enableCloudinary === true) { // use cloudinary to store images
+      try {
+        uploadedImages = await CloudinaryService.addImage(productId, req);
+      } catch (error) {
+        console.error("Cloudinary image upload failed:", error)
+        res.status(500).send(this.getErrorMessage(error));
+      }
+    } else { // use filesystem to store images
+      try {
+        uploadedImages = await FileSystemService.addImage(productId, req);
+      } catch (error) {
+        console.error("Image upload failed:", error)
+        res.status(500).send(this.getErrorMessage(error));
+      }
+    }
 
-    let form = new formidable.IncomingForm();
-    form.uploadDir = uploadDir;
+    const uploadedData = await Promise.all(uploadedImages.map(async image => {
+      try {
+        return await mongo.db.collection('products').updateOne({
+          _id: productObjectID
+        }, {
+          $push: { images: image }
+        });
+      } catch (error) {
+        console.error("Image update failed:", error)
+        res.status(500).send(this.getErrorMessage(error));
+      }
+    }));
 
-    form
-      .on('fileBegin', (name, file) => {
-        // Emitted whenever a field / value pair has been received.
-        file.name = utils.getCorrectFileName(file.name);
-        file.path = uploadDir + '/' + file.name;
-      })
-      .on('file', async (field, file) => {
-        // every time a file has been uploaded successfully,
-        if(file.name) {
-          const imageData = {
-            "id": new ObjectID(),
-            "alt": "",
-            "position": 99,
-            "filename": file.name
-          };
-
-          uploadedFiles.push(imageData);
-
-          await mongo.db.collection('products').updateOne({
-            _id: productObjectID
-          }, {
-            $push: { images: imageData }
-          });
-        }
-      })
-      .on('error', (err) => {
-        res.status(500).send(this.getErrorMessage(err));
-      })
-      .on('end', () => {
-        res.send(uploadedFiles);
-      });
-
-    form.parse(req);
+    res.send(uploadedImages)
   }
 
   updateImage(productId, imageId, data) {

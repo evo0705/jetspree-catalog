@@ -1,6 +1,11 @@
 'use strict';
 
+const multer  = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage })
+
 const security = require('../lib/security');
+const settings = require('../lib/settings');
 const ProductsService = require('../services/products/products');
 const ProductOptionsService = require('../services/products/options');
 const ProductOptionValuesService = require('../services/products/optionValues');
@@ -21,7 +26,7 @@ class ProductsRoute {
     this.router.delete('/v1/products/:productId', security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.deleteProduct.bind(this));
 
     this.router.get('/v1/products/:productId/images', security.checkUserScope.bind(this, security.scope.READ_PRODUCTS), this.getImages.bind(this));
-    this.router.post('/v1/products/:productId/images', security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.addImage.bind(this));
+    this.router.post('/v1/products/:productId/images', security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.assignUploadType.bind(this), this.addImage.bind(this));
     this.router.put('/v1/products/:productId/images/:imageId', security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.updateImage.bind(this));
     this.router.delete('/v1/products/:productId/images/:imageId', security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.deleteImage.bind(this));
 
@@ -221,6 +226,14 @@ class ProductsRoute {
     ProductVariantsService.setVariantOption(req.params.productId, req.params.variantId, req.body).then(data => {
       res.send(data)
     }).catch(next);
+  }
+
+  assignUploadType(req, res, next) {
+    if(settings.enableCloudinary === true) {
+      upload.array('file')(req, res, next);
+    } else {
+      next();
+    }
   }
 }
 
