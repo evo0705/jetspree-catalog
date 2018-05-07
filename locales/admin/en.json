@@ -82,6 +82,7 @@
   "products_weight": "Weight",
   "products_dateSaleFrom": "Sale from",
   "products_dateSaleTo": "Sale to",
+  "products_service_fee": "Service fee (%)",
   "products_pricing": "Pricing",
   "products_visibility": "Visibility",
   "products_inventory": "Inventory",
