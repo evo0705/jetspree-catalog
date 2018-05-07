@@ -73,5 +73,8 @@ module.exports = {
   // used by API
   orderStartNumber: 1000,
 
-  developerMode: isDeveloperMode
+  developerMode: isDeveloperMode,
+
+  // whether to use cloudinary for images
+  enableCloudinary: true
 }

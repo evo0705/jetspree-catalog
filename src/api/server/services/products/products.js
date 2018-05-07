@@ -3,6 +3,7 @@
 const path = require('path');
 const { URL } = require('url');
 const fse = require('fs-extra');
+const cloudinary = require('cloudinary');
 const ObjectID = require('mongodb').ObjectID;
 const settings = require('../../lib/settings');
 const mongo = require('../../lib/mongo');
@@ -795,7 +796,11 @@ class ProductsService {
   getSortedImagesWithUrls(item, domain) {
     if(item.images && item.images.length > 0) {
       return item.images.map(image => {
-        image.url = this.getImageUrl(domain, item.id, image.filename || '');
+        if(settings.enableCloudinary === true) {
+          image.url = cloudinary.url(image.external_id, { quality: "auto", fetch_format: "auto", secure: true })
+        } else {
+          image.url = this.getImageUrl(domain, item.id, image.filename || '');
+        }
         return image;
       }).sort((a,b) => (a.position - b.position ));
     } else {
