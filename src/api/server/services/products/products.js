@@ -182,7 +182,8 @@ class ProductsService {
   getAllAttributesIfNeeded(params, categories, matchTextQuery, projectQuery) {
     // get attributes with counts without filter by attributes
     // only for category
-    if(params.category_id) {
+    const getAttributesUnconditionally = parse.getBooleanIfValid(params.get_attributes_unconditionally)
+    if(params.category_id || getAttributesUnconditionally) {
       const attributesMatchQuery = this.getMatchQuery(params, categories, false, false);
 
       const aggregation = [];
@@ -202,7 +203,8 @@ class ProductsService {
   getAttributesIfNeeded(params, categories, matchTextQuery, projectQuery) {
     // get attributes with counts without filter by attributes
     // only for category
-    if(params.category_id) {
+    const getAttributesUnconditionally = parse.getBooleanIfValid(params.get_attributes_unconditionally)
+    if(params.category_id || getAttributesUnconditionally) {
       const attributesMatchQuery = this.getMatchQuery(params, categories, false, true);
 
       const aggregation = [];
