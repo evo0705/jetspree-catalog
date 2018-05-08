@@ -145,6 +145,10 @@ const getOrderAddress = (address) => {
 }
 
 const getArrayFromString = (value) => {
+  if(Array.isArray(value) === true) {
+    return value;
+  }
+
   if(value && value.length > 0) {
     return value.split(',');
   } else {
