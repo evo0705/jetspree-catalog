@@ -1,0 +1,20 @@
+.countryHints {
+  margin-top: 10px;
+}
+.countryHints label {
+  color: rgba(0, 0, 0, 0.3);
+  font-size: 12px;
+}
+.countryHints > div {
+  margin-top: 5px;
+}
+.countryHints > div > div > span > div {  
+  color: rgba(0, 0, 0, 0.3);
+}
+.countryHints > div > div:first-child {
+  margin-top: 5px;
+}
+.countryHints > div > div:last-child {
+  z-index: 99;
+  border-width: 1px;
+}

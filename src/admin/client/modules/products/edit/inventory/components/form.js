@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Field, reduxForm } from 'redux-form'
 import { TextField, SelectField, DatePicker } from 'redux-form-material-ui'
 import { CustomToggle } from 'modules/shared/form'
+import CountrySelect from './countrySelect';
 
 import messages from 'lib/text'
 import style from './style.css'
@@ -100,6 +101,13 @@ const ProductInventoryForm = ({ handleSubmit, pristine, reset, submitting, initi
                     textFieldStyle={{ width:'100%' }}
                     format={(value, name) => value === '' ? null : value}
                     floatingLabelText={messages.products_dateSaleTo} />
+                </div>
+                <div className="col-xs-12">
+                  <Field
+                    name="country_hints"
+                    component={CountrySelect}
+                    labelText={messages.products_country_hints}                                    
+                  />
                 </div>
                 <div className="col-xs-6">
                   <Field name="service_fee" component={TextField} floatingLabelText={messages.products_service_fee} fullWidth={true}/>
