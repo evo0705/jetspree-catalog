@@ -14,5 +14,6 @@ dist/*
 logs/*.log
 npm-debug.log*
 *.zip
-
 \.idea/
+.env
+*.iml

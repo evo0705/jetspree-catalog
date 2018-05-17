@@ -1,0 +1,13 @@
+.batchList {
+  background-color: #FFFFFF;
+  margin-top: 15px;
+}
+.batchHeader {
+  font-size: 12px;
+}
+.batchItem {
+  font-size: 12px;
+}
+.batchItemColumn {
+  padding: 10px 0;
+}

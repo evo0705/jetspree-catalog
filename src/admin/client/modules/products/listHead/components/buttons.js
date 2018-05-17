@@ -52,7 +52,7 @@ export default class Buttons extends React.Component {
   }
 
   render() {
-    const { search, setSearch, selectedCount, onDelete, onCreate } = this.props;
+    const { search, setSearch, selectedCount, onDelete, onCreate, onBatchProcess } = this.props;
 
     const actionsMoveTo = [
       <FlatButton
@@ -104,6 +104,9 @@ export default class Buttons extends React.Component {
         }
         <IconButton touch={true} tooltipPosition="bottom-left" tooltip={messages.addProduct} onClick={onCreate}>
           <FontIcon color="#fff" className="material-icons">add</FontIcon>
+        </IconButton>
+        <IconButton touch={true} tooltipPosition="bottom-left" tooltip={messages.batchProcess} onClick={onBatchProcess}>
+          <FontIcon color="#fff" className="material-icons">cloud_upload</FontIcon>
         </IconButton>
       </Fragment>
     )

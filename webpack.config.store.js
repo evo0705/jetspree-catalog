@@ -29,6 +29,12 @@ module.exports = {
     }
   },
 
+  resolve: {
+    alias: {      
+      ApiClient: path.resolve(__dirname, 'src/api-client')
+    }
+  },
+
   module: {
     rules: [
       {

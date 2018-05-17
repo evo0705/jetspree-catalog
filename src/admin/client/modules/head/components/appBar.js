@@ -8,6 +8,7 @@ import CustomersHead from 'modules/customers/listHead/index'
 import CustomerHead from 'modules/customers/editHead/index'
 import ProductsHead from 'modules/products/listHead/index'
 import ProductHead from 'modules/products/editHead/index'
+import BatchHead from 'modules/products/batchHead/index'
 import OrdersHead from 'modules/orders/listHead/index'
 import OrderHead from 'modules/orders/editHead/index'
 import OrderStatusHead from 'modules/orderStatuses/head/index'
@@ -105,6 +106,19 @@ export default class AppBarTop extends React.Component {
       title = productCategoryName ? messages.productCategories_titleEdit : messages.productCategories_title;
       leftButton = <Link to="/admin/products"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
       rightElements = <ProductCategoryHead />
+    }
+    else if(pathname === '/admin/products/batch'){
+      title = messages.batchProcessTitle;
+      leftButton = <Link to="/admin/products"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
+      rightElements = <BatchHead />
+    }
+    else if(pathname === '/admin/products/batch/create'){
+      title = messages.batchCreateTitle;
+      leftButton = <Link to="/admin/products/batch"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
+    }
+    else if(pathname.startsWith('/admin/products/batch/view/')){
+      title = messages.batchViewTitle;
+      leftButton = <Link to="/admin/products/batch"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
     }
     else if(pathname === '/admin/customers'){
       title = messages.customers_title;
