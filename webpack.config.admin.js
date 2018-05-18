@@ -115,9 +115,13 @@ module.exports = {
   ],
 
   devServer: {
-    publicPath: path.join(__dirname, "public"),
-    contentBase: path.join(__dirname, "public/admin"),
-    historyApiFallback: true,
-    hot: true
-  }
+    publicPath:         path.join(__dirname, "public"),
+    contentBase:        path.join(__dirname, "public"),
+    historyApiFallback: {
+      rewrites: [
+        { from:"/*", to:"/admin/index.html"}
+      ]
+    },
+    hot:                true,
+  },
 }
