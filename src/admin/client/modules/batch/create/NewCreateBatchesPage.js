@@ -2,7 +2,7 @@ import React from "react"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
 import { uploadBatchFile } from "../actions"
-import Uploader from "./components/uploader"
+import Uploader from "./components/Uploader"
 
 class NewCreateBatchesPage extends React.Component {
   constructor(props) {
