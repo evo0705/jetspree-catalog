@@ -25,8 +25,8 @@ module.exports = {
   output: {
     publicPath: '/',
     path: path.resolve(__dirname, 'public'),
-    filename: 'admin-assets/js/[name]-[chunkhash].js',
-    chunkFilename: 'admin-assets/js/[name]-[chunkhash].js'
+    filename: 'admin-assets/js/[name]-[hash].js',
+    chunkFilename: 'admin-assets/js/[name]-[hash].js'
   },
 
   optimization: {
@@ -93,7 +93,7 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({ APPLICATION_CONFIG: JSON.stringify(applicationConfig) }),
     new webpack.DefinePlugin({ APPLICATION_TEXT: JSON.stringify(applicationText) }),
-    new ExtractTextPlugin("admin-assets/css/bundle-[contenthash].css"),
+    new ExtractTextPlugin("admin-assets/css/bundle-[hash].css"),
     new HtmlWebpackPlugin({
       template: 'src/admin/client/index.html',
       language: applicationConfig.language,
