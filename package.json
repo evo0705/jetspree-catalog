@@ -57,7 +57,7 @@
     "start-api": "node src/api/server/index.js",
     "start-store": "node dist/store/server/index.js",
     "start": "npm run start-api & npm run start-store",
-    "watch": "webpack-dev-server --hot --colors --port 3000 --config webpack.dev.config.babel.js"
+    "watch": "webpack-dev-server --hot --colors --port 3000 --config webpack.admin.dev.config.babel.js"
   },
   "dependencies": {
     "babel-cli": "^6.26.0",

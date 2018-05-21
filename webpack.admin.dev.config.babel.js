@@ -11,12 +11,14 @@ const APP_DIR = path.resolve(__dirname, "src")
 
 export default {
   entry:        APP_DIR + "/admin/client/index.js",
+
   output:       {
     publicPath:    "/",
-    path:          path.resolve(__dirname, "public"),
-    filename:      "admin-assets/js/[name]-[hash].js",
-    chunkFilename: "admin-assets/js/[name]-[hash].js",
+    path:          BUILD_DIR,
+    filename:      "js/[name]-[hash].js",
+    chunkFilename: "js/[name]-[hash].js",
   },
+
   module:       {
     rules: [
       {
@@ -35,18 +37,7 @@ export default {
       },
     ],
   },
-  optimization: {
-    splitChunks: {
-      cacheGroups: {
-        vendor: {
-          chunks:  "initial",
-          name:    "vendor",
-          test:    "vendor",
-          enforce: true,
-        },
-      },
-    },
-  },
+
   resolve:      {
     alias: {
       src:     path.resolve(__dirname, "src/admin/client"),
@@ -55,6 +46,7 @@ export default {
       lib:     path.resolve(__dirname, "src/admin/client/lib"),
     },
   },
+
   plugins:      [
     new webpack.DefinePlugin({ APPLICATION_CONFIG: JSON.stringify(applicationConfig) }),
     new webpack.DefinePlugin({ APPLICATION_TEXT: JSON.stringify(applicationText) }),
@@ -80,14 +72,9 @@ export default {
   ],
 
   devServer: {
-    publicPath:         path.join(__dirname, "public"),
     contentBase:        path.join(__dirname, "public"),
-    historyApiFallback: {
-      rewrites: [
-        { from: "/*", to: "/admin/index.html" },
-      ],
-    },
-    hot:                true,
+    historyApiFallback: true,
   },
+
   devtool:   "#eval-source-map",
 }
