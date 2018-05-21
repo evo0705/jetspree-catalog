@@ -889,8 +889,10 @@ class ProductsService {
       }
       item.categories = undefined
 
-      const countryHints = item.country_hints.map(countryCode => countries.find(country => country.code === countryCode))
-      item.country_hints = countryHints
+      if (item.country_hints) {
+        const countryHints = item.country_hints.map(countryCode => countries.find(country => country.code === countryCode))
+        item.country_hints = countryHints
+      }
     }
 
     return item
