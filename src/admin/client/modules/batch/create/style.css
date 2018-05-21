@@ -11,3 +11,7 @@
 .batchItemColumn {
   padding: 10px 0;
 }
+.batchDetailContainer {
+  background-color: #FFFFFF;
+  margin-top: 1rem;
+}

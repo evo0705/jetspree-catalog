@@ -11,6 +11,7 @@ import pages from 'modules/pages/reducer';
 import settings from 'modules/settings/reducer';
 import apps from 'modules/apps/reducer';
 import files from 'modules/files/reducer';
+import batches from 'modules/batch/reducer';
 
 export default combineReducers({
   form: formReducer,
@@ -23,5 +24,6 @@ export default combineReducers({
   orderStatuses,
   pages,
   apps,
-  files
+  files,
+  batches,
 });

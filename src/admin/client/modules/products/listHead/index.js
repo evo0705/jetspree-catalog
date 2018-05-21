@@ -27,7 +27,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(createProduct(ownProps.history))
     },
     onBatchProcess: () => {
-      ownProps.history.push('/admin/products/batch');
+      ownProps.history.push('/admin/create-batches');
     }
   }
 }

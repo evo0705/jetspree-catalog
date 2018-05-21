@@ -8,7 +8,7 @@ import CustomersHead from 'modules/customers/listHead/index'
 import CustomerHead from 'modules/customers/editHead/index'
 import ProductsHead from 'modules/products/listHead/index'
 import ProductHead from 'modules/products/editHead/index'
-import BatchHead from 'modules/products/batchHead/index'
+import BatchListHeaderButtons from 'modules/batch/create/header/BatchListHeaderButtons'
 import OrdersHead from 'modules/orders/listHead/index'
 import OrderHead from 'modules/orders/editHead/index'
 import OrderStatusHead from 'modules/orderStatuses/head/index'
@@ -107,18 +107,18 @@ export default class AppBarTop extends React.Component {
       leftButton = <Link to="/admin/products"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
       rightElements = <ProductCategoryHead />
     }
-    else if(pathname === '/admin/products/batch'){
-      title = messages.batchProcessTitle;
+    else if(pathname === '/admin/create-batches'){
+      title = messages.batch_process_title;
       leftButton = <Link to="/admin/products"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
-      rightElements = <BatchHead />
+      rightElements = <BatchListHeaderButtons />
     }
-    else if(pathname === '/admin/products/batch/create'){
-      title = messages.batchCreateTitle;
-      leftButton = <Link to="/admin/products/batch"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
+    else if(pathname === '/admin/create-batches/new'){
+      title = messages.batch_create_title;
+      leftButton = <Link to="/admin/create-batches"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
     }
-    else if(pathname.startsWith('/admin/products/batch/view/')){
-      title = messages.batchViewTitle;
-      leftButton = <Link to="/admin/products/batch"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
+    else if(pathname.startsWith('/admin/create-batches/')){
+      title = messages.batch_view_title;
+      leftButton = <Link to="/admin/create-batches"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
     }
     else if(pathname === '/admin/customers'){
       title = messages.customers_title;

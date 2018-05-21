@@ -1,24 +1,26 @@
-import React from 'react';
-import TextField from 'material-ui/TextField';
-import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
-import Dropzone from 'react-dropzone';
-import Snackbar from 'material-ui/Snackbar';
-import RaisedButton from 'material-ui/RaisedButton';
-import messages from 'lib/text';
+import React from "react"
+import TextField from "material-ui/TextField"
+import Dialog from "material-ui/Dialog"
+import FlatButton from "material-ui/FlatButton"
+import Dropzone from "react-dropzone"
+import Snackbar from "material-ui/Snackbar"
+import RaisedButton from "material-ui/RaisedButton"
+import messages from "lib/text"
 
 export default class Uploader extends React.Component {
   onDrop = files => {
     this.setState({
-      uploading: true
+      uploading: true,
     })
-    let form = new FormData();
-    files.map(file => { form.append('file', file) })
-    this.props.onUpload(form);
+    let form = new FormData()
+    files.map(file => {
+      form.append("file", file)
+    })
+    this.props.onUpload(form)
   }
 
-  render(){
-    const { uploading = false, fileName } = this.props;
+  render() {
+    const { uploading = false, fileName } = this.props
 
     return (
       <div>

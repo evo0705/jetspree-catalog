@@ -1,17 +1,13 @@
-import React from 'react';
-import { TableRow, TableRowColumn } from 'material-ui/Table';
-import { Link } from 'react-router-dom'
-import Divider from 'material-ui/Divider';
-import FontIcon from 'material-ui/FontIcon';
-import messages from 'lib/text';
-import style from './style.css';
-import moment from 'moment';
+import React from "react"
+import { TableRow, TableRowColumn } from "material-ui/Table"
+import { Link } from "react-router-dom"
+import moment from "moment"
 
 const BatchListItem = ({ batchItem }) => {
   return (
     <TableRow>
       <TableRowColumn>
-        <Link to={ `/admin/products/batch/view/${batchItem._id}` }>
+        <Link to={ `/admin/create-batches/${batchItem._id}` }>
           { batchItem.file_name }
         </Link>
       </TableRowColumn>
@@ -72,4 +68,4 @@ const BatchListItem = ({ batchItem }) => {
   )
 }
 
-export default BatchListItem;
+export default BatchListItem

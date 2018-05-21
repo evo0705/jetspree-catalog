@@ -1,10 +1,12 @@
-import React from 'react'
-import messages from 'lib/text'
-import Uploader from './components/uploader'
+import React from "react"
+import { connect } from "react-redux"
+import { withRouter } from "react-router"
+import { uploadBatchFile } from "../actions"
+import Uploader from "./components/uploader"
 
-class BatchCreatePage extends React.Component {
+class NewCreateBatchesPage extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.onFileUpload = this.onFileUpload.bind(this)
   }
 
@@ -19,27 +21,23 @@ class BatchCreatePage extends React.Component {
       <div>
         <Uploader uploading={uploading} fileName={fileName} onUpload={this.onFileUpload} />
       </div>
-    )
+  )
   }
 }
 
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
-import { uploadBatchFile } from '../../actions'
-
 const mapStateToProps = (state, ownProps) => {
   return {
-    uploading: state.products.uploadingBatchFile,
-    fileName: null
+    uploading: state.batches.uploadingBatchFile,
+    fileName:  null,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     onUploadFile: (formData) => {
-      dispatch(uploadBatchFile(formData));
+      dispatch(uploadBatchFile(formData))
     },
   }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(BatchCreatePage));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(NewCreateBatchesPage))
