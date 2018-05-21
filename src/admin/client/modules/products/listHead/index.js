@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
-import { fetchProducts, deleteProducts, setCategory, setFilter, createProduct } from '../actions'
+import { fetchProducts, deleteProducts, setCategory, setFilter, createProduct, batchProcess } from '../actions'
 import Buttons from './components/buttons'
 
 const mapStateToProps = (state, ownProps) => {
@@ -25,6 +25,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     onCreate: () => {
       dispatch(createProduct(ownProps.history))
+    },
+    onBatchProcess: () => {
+      ownProps.history.push('/admin/create-batches');
     }
   }
 }

@@ -14,10 +14,40 @@ const CORS_HOST = process.env.CORS_HOST || 'http://localhost:3000';
 const API_LISTEN_PORT = process.env.PORT || 3001;
 const STORE_LISTEN_PORT = process.env.PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
+const ENABLE_CLOUDINARY = process.env.ENABLE_CLOUDINARY || 'true';
+
+const DEFAULT_BUCKETEER_AWS_ACCESS_KEY_ID = 'default_bucketeer_aws_access_key_id';
+const DEFAULT_BUCKETEER_AWS_SECRET_ACCESS_KEY = 'default_bucketeer_aws_secret_access_key';
+const DEFAULT_BUCKETEER_BUCKET_NAME = 'default_bucketeer_bucket_name';
+const BUCKETEER_AWS_ACCESS_KEY_ID = process.env.BUCKETEER_AWS_ACCESS_KEY_ID || DEFAULT_BUCKETEER_AWS_ACCESS_KEY_ID;
+const BUCKETEER_AWS_SECRET_ACCESS_KEY = process.env.BUCKETEER_AWS_SECRET_ACCESS_KEY || DEFAULT_BUCKETEER_AWS_SECRET_ACCESS_KEY;
+const BUCKETEER_BUCKET_NAME = process.env.BUCKETEER_BUCKET_NAME || DEFAULT_BUCKETEER_BUCKET_NAME;
+const BUCKETEER_AWS_REGION = process.env.BUCKETEER_AWS_REGION || 'us-east-1';
 
 let isDeveloperMode = false;
+let isCloudinaryEnabled = false;
+
 if(NODE_ENV === 'development') {
   isDeveloperMode = true;
+}
+
+if(ENABLE_CLOUDINARY === 'true') {
+  isCloudinaryEnabled = true;
+}
+
+if(BUCKETEER_AWS_ACCESS_KEY_ID === DEFAULT_BUCKETEER_AWS_ACCESS_KEY_ID) {
+  console.error("BUCKETEER_AWS_ACCESS_KEY_ID must be set");
+  process.exit();
+}
+
+if(BUCKETEER_AWS_SECRET_ACCESS_KEY === DEFAULT_BUCKETEER_AWS_SECRET_ACCESS_KEY) {
+  console.error("BUCKETEER_AWS_SECRET_ACCESS_KEY must be set");
+  process.exit();
+}
+
+if(BUCKETEER_BUCKET_NAME === DEFAULT_BUCKETEER_BUCKET_NAME) {
+  console.error("BUCKETEER_BUCKET_NAME must be set");
+  process.exit();
 }
 
 module.exports = {
@@ -76,5 +106,11 @@ module.exports = {
   developerMode: isDeveloperMode,
 
   // whether to use cloudinary for images
-  enableCloudinary: true
+  enableCloudinary: isCloudinaryEnabled,
+
+  // bucketeer credintials for batchupload product
+  bucketeerAWSAccessKeyId: BUCKETEER_AWS_ACCESS_KEY_ID,
+  bucketeerAWSSecretAccessKey: BUCKETEER_AWS_SECRET_ACCESS_KEY,
+  bucketeerAWSRegion: BUCKETEER_AWS_REGION,
+  bucketeerBucketName: BUCKETEER_BUCKET_NAME,
 }

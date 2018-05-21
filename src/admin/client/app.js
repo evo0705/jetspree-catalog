@@ -8,6 +8,9 @@ import Home from 'routes/home'
 import NotFound from 'routes/notFound'
 import Products from 'routes/products'
 import ProductDetails from 'routes/products/edit'
+import ListCreateBatches from 'routes/batch/create/ListCreateBatches'
+import NewCreateBatches from 'routes/batch/create/NewCreateBatches'
+import ViewCreateBatches from 'routes/batch/create/ViewCreateBatches'
 import ProductCategories from 'routes/products/categories'
 import Customers from 'routes/customers'
 import CustomerDetails from 'routes/customers/edit'
@@ -65,6 +68,9 @@ export default () => (
             <Route path="/admin/customers/groups" exact component={CustomerGroups}/>
             <Route path="/admin/customer/:customerId" exact component={CustomerDetails}/>
             <Route path="/admin/product/:productId" component={ProductDetails}/>
+            <Route path="/admin/create-batches" exact component={ListCreateBatches}/>
+            <Route path="/admin/create-batches/new" component={NewCreateBatches}/>
+            <Route path="/admin/create-batches/:batchId" component={ViewCreateBatches}/>
             <Route path="/admin/pages" exact component={Pages}/>
             <Route path="/admin/pages/add" exact component={PagesDetails}/>
             <Route path="/admin/pages/:pageId" component={PagesDetails}/>

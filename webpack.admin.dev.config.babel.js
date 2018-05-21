@@ -25,6 +25,7 @@ export default {
       routes:  path.resolve(__dirname, "src/admin/client/routes"),
       modules: path.resolve(__dirname, "src/admin/client/modules"),
       lib:     path.resolve(__dirname, "src/admin/client/lib"),
+      ApiClient: path.resolve(__dirname, 'src/api-client'),
     },
   },
 
