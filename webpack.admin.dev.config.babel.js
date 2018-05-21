@@ -10,35 +10,16 @@ const BUILD_DIR = path.resolve(__dirname, "build")
 const APP_DIR = path.resolve(__dirname, "src")
 
 export default {
-  entry:        APP_DIR + "/admin/client/index.js",
+  entry: APP_DIR + "/admin/client/index.js",
 
-  output:       {
+  output: {
     publicPath:    "/",
     path:          BUILD_DIR,
     filename:      "js/[name]-[hash].js",
     chunkFilename: "js/[name]-[hash].js",
   },
 
-  module:       {
-    rules: [
-      {
-        test:    /\.js?/,
-        include: APP_DIR,
-        use:     "babel-loader",
-      },
-      {
-        test: /\.css$/,
-        use:  ["style-loader", "css-loader"],
-      },
-      {
-        test:    /\.(png|jpg|gif)$/,
-        use:     "file-loader?name=images/img-[hash:6].[ext]&publicPath=/",
-        exclude: /node_modules/,
-      },
-    ],
-  },
-
-  resolve:      {
+  resolve: {
     alias: {
       src:     path.resolve(__dirname, "src/admin/client"),
       routes:  path.resolve(__dirname, "src/admin/client/routes"),
@@ -47,15 +28,54 @@ export default {
     },
   },
 
-  plugins:      [
+  module: {
+    rules: [
+      {
+        test:    /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use:     ["babel-loader"],
+      }, {
+        test:    /\.css$/,
+        include: [path.resolve(__dirname, "public")],
+        use:     ExtractTextPlugin.extract({
+          use: [
+            {
+              loader:  "css-loader",
+              options: {
+                modules:       false,
+                importLoaders: true,
+              },
+            },
+          ],
+        }),
+      }, {
+        test:    /\.css$/,
+        exclude: /node_modules|public/,
+        use:     ExtractTextPlugin.extract({
+          use: [
+            {
+              loader:  "css-loader",
+              options: {
+                modules:        true,
+                importLoaders:  true,
+                localIdentName: "[name]__[local]___[hash:base64:5]",
+              },
+            },
+          ],
+        }),
+      },
+    ],
+  },
+
+  plugins: [
     new webpack.DefinePlugin({ APPLICATION_CONFIG: JSON.stringify(applicationConfig) }),
     new webpack.DefinePlugin({ APPLICATION_TEXT: JSON.stringify(applicationText) }),
-    new ExtractTextPlugin("public/admin-assets/css/bundle-[hash].css"),
+    new ExtractTextPlugin("css/bundle-[hash].css"),
     new HtmlWebpackPlugin({
       template: "src/admin/client/index.html",
       language: applicationConfig.language,
       inject:   "body",
-      filename: "index.html",
+      filename: "admin/index.html",
     }),
     new webpack.BannerPlugin({
       banner:    `Created: ${new Date().toUTCString()}`,
@@ -76,5 +96,5 @@ export default {
     historyApiFallback: true,
   },
 
-  devtool:   "#eval-source-map",
+  devtool: "#eval-source-map",
 }
