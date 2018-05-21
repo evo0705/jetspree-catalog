@@ -93,7 +93,11 @@ export default {
 
   devServer: {
     contentBase:        path.join(__dirname, "public"),
-    historyApiFallback: true,
+    historyApiFallback: {
+      rewrites: [
+        { from: "/admin/*", to: "/admin/index.html" },
+      ],
+    },
   },
 
   devtool: "#eval-source-map",
