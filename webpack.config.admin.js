@@ -24,6 +24,7 @@ module.exports = {
 
   output: {
     publicPath: '/',
+    path: path.resolve(__dirname, 'public'),
     filename: 'admin-assets/js/[name]-[chunkhash].js',
     chunkFilename: 'admin-assets/js/[name]-[chunkhash].js'
   },
