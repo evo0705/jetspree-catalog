@@ -12,8 +12,8 @@ module.exports = {
   output: {
     publicPath: '/',
     path: path.resolve(__dirname, 'theme'),
-    filename: 'assets/js/[name]-[chunkhash].js',
-    chunkFilename: 'assets/js/[name]-[chunkhash].js'
+    filename: 'assets/js/[name]-[hash].js',
+    chunkFilename: 'assets/js/[name]-[hash].js'
   },
 
   optimization: {
@@ -63,7 +63,7 @@ module.exports = {
   },
 
   plugins: [
-    new ExtractTextPlugin("assets/css/bundle-[contenthash].css"),
+    new ExtractTextPlugin("assets/css/bundle-[hash].css"),
     new HtmlWebpackPlugin({
       template: 'theme/index.html',
       inject: 'body',
