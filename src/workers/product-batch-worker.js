@@ -1,6 +1,7 @@
 "use strict"
 
 const Queue = require("../queue/Queue")
+const ProductBatchUploadQueue = require("../queue/ProductBatchUploadQueue")
 const ProductBatchDeleteQueue = require("../queue/ProductBatchDeleteQueue")
 
 serve().catch()
@@ -16,6 +17,7 @@ async function serve() {
   try {
     await Promise.all([
       ProductBatchDeleteQueue.process(),
+      ProductBatchUploadQueue.process(),
     ])
     console.log("All workers started successfully.")
   } catch (err) {

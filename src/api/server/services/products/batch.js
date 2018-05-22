@@ -11,6 +11,7 @@ const FileSystemService = require("./fileSystem")
 const CloudinaryService = require("./cloudinary")
 const AWS = require("aws-sdk")
 const uuid = require("uuid/v1")
+const ProductBatchUploadQueue = require("../../../../queue/ProductBatchUploadQueue")
 const ProductBatchDeleteQueue = require("../../../../queue/ProductBatchDeleteQueue")
 
 const S3 = new AWS.S3({
@@ -78,7 +79,14 @@ class BatchUploadService {
       const inserted = await mongo.db.collection("batch").insertOne(batchRecord)
 
       // Publish message to queue
-      await ProductBatchDeleteQueue.publish(inserted.insertedId.toString())
+      switch (batchAction) {
+        case this.BATCH_ACTION.CREATE_PRODUCTS:
+          await ProductBatchUploadQueue.publish(inserted.insertedId.toString())
+          break
+        case this.BATCH_ACTION.DELETE_PRODUCTS:
+          await ProductBatchDeleteQueue.publish(inserted.insertedId.toString())
+          break
+      }
 
       res.status(200).send(batchRecord)
     } catch (error) {

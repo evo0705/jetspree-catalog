@@ -574,6 +574,13 @@ class ProductsService {
       .then(res => this.getSingleProduct(res.ops[0]._id.toString()))
   }
 
+  async addProducts(dataArray) {
+    const dataToInsert = await Promise.all(dataArray.map(data => {
+      return this.getValidDocumentForInsert(data)
+    }))
+    return await mongo.db.collection("products").insertMany(dataToInsert)
+  }
+
   updateProduct(id, data) {
     if (!ObjectID.isValid(id)) {
       return Promise.reject("Invalid identifier")
