@@ -603,6 +603,16 @@ class ProductsService {
       })
   }
 
+  async deleteProductsByObjectIDArray(productObjectIDArray) {
+    productObjectIDArray.forEach(productObjectID => {
+      if (!ObjectID.isValid(productObjectID)) {
+        return Promise.reject("Invalid identifier")
+      }
+    })
+    const updated = await mongo.db.collection("products").updateMany({ "_id": { $in: productObjectIDArray } }, { $set: { is_deleted: true } })
+    return updated.matchedCount
+  }
+
   getValidDocumentForInsert(data) {
     //  Allow empty product to create draft
 
