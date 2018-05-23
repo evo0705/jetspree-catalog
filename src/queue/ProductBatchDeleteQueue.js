@@ -34,17 +34,26 @@ async function consume(data) {
   try {
     batchItem = await BatchUploadService.getBatchItemByObjectID(batchObjectID)
 
-    await BatchUploadService.setDateStartedByObjectID(batchItem._id)
-
     // Verify batchItem
     if (batchItem === null) {
-      await BatchUploadService.setDateStoppedByObjectID(batchItem._id)
+      await BatchUploadService.update(batchItem._id, {
+        date_aborted: new Date,
+        status:       BatchUploadService.BATCH_STATUS.ABORTED,
+      })
       return new MessageResponse(`Couldn't fetch batch with ID: ${batchID}`, false, false)
     }
 
+    await BatchUploadService.update(batchItem._id, {
+      date_started: new Date,
+      status:       BatchUploadService.BATCH_STATUS.STARTED,
+    })
+
     fileBuffer = await download(batchItem.file_url)
   } catch (err) {
-    await BatchUploadService.setDateStoppedByObjectID(batchItem._id)
+    await BatchUploadService.update(batchItem._id, {
+      date_aborted: new Date,
+      status:       BatchUploadService.BATCH_STATUS.ABORTED,
+    })
     return new MessageResponse(`Couldn't fetch file: ${err}`, false, true)
   }
 
@@ -54,7 +63,10 @@ async function consume(data) {
     const csvString = fileBuffer.toString("utf-8")
     const parsedData = await ParseCSVString(csvString)
 
-    await BatchUploadService.setDateParsedByObjectID(batchItem._id)
+    await BatchUploadService.update(batchItem._id, {
+      date_parsed: new Date,
+      status:      BatchUploadService.BATCH_STATUS.PARSED,
+    })
 
     // Validate ObjectID and map it into array
     productObjectIDArray.push(...parsedData.map(row => {
@@ -64,7 +76,10 @@ async function consume(data) {
       return new ObjectID(row.id)
     }))
   } catch (err) {
-    await BatchUploadService.setDateStoppedByObjectID(batchItem._id)
+    await BatchUploadService.update(batchItem._id, {
+      date_aborted: new Date,
+      status:       BatchUploadService.BATCH_STATUS.ABORTED,
+    })
     return new MessageResponse(`Couldn't read file: ${err}`, false, false)
   }
 
@@ -73,11 +88,17 @@ async function consume(data) {
   try {
     totalCount = await ProductsService.deleteProductsByObjectIDArray(productObjectIDArray)
   } catch (err) {
-    await BatchUploadService.setDateStoppedByObjectID(batchItem._id)
+    await BatchUploadService.update(batchItem._id, {
+      date_aborted: new Date,
+      status:       BatchUploadService.BATCH_STATUS.ABORTED,
+    })
     return new MessageResponse(`Couldn't delete products: ${err}`, false, true)
   }
 
-  await BatchUploadService.setDateCompletedByObjectID(batchItem._id)
+  await BatchUploadService.update(batchItem._id, {
+    date_completed: new Date,
+    status:         BatchUploadService.BATCH_STATUS.COMPLETED,
+  })
 
   // Return success
   return new MessageResponse(`Deleted ${totalCount} products`, true)

@@ -574,10 +574,7 @@ class ProductsService {
       .then(res => this.getSingleProduct(res.ops[0]._id.toString()))
   }
 
-  async addProducts(dataArray) {
-    const dataToInsert = await Promise.all(dataArray.map(data => {
-      return this.getValidDocumentForInsert(data)
-    }))
+  async addProducts(dataToInsert) {
     return await mongo.db.collection("products").insertMany(dataToInsert)
   }
 
@@ -947,6 +944,16 @@ class ProductsService {
     } else {
       return Promise.resolve(product)
     }
+  }
+
+  async validateSKU(sku){
+    const result = await mongo.db.collection("products").findOne({ sku })
+    return result === null
+  }
+
+  async validateSlug(slug){
+    const result = await mongo.db.collection("products").findOne({ slug })
+    return result === null
   }
 
   isSlugExists(slug, productId) {

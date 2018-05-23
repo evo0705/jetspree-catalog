@@ -2,9 +2,14 @@ const download = require("download")
 const Queue = require("./Queue")
 const MessageResponse = require("./MessageResponse")
 const ProductsService = require("../api/server/services/products/products")
+const ProductCategoriesService = require("../api/server/services/products/productCategories")
 const BatchUploadService = require("../api/server/services/products/batch")
 const ParseCSVString = require("../helpers/CSV").ParseCSVString
 const ObjectID = require("mongodb").ObjectID
+const rp = require("request-promise")
+const countries = require("../api/server/lib/countries")
+const cloudinary = require("../api/server/services/products/cloudinary")
+const _ = require("lodash")
 
 const BULK_PRODUCT_UPLOAD = "bulk_product_upload"
 
@@ -34,17 +39,26 @@ async function consume(data) {
   try {
     batchItem = await BatchUploadService.getBatchItemByObjectID(batchObjectID)
 
-    await BatchUploadService.setDateStartedByObjectID(batchItem._id)
-
     // Verify batchItem
     if (batchItem === null) {
-      await BatchUploadService.setDateStoppedByObjectID(batchItem._id)
+      await BatchUploadService.update(batchItem._id, {
+        date_aborted: new Date,
+        status:       BatchUploadService.BATCH_STATUS.ABORTED,
+      })
       return new MessageResponse(`Couldn't fetch batch with ID: ${batchID}`, false, false)
     }
 
+    await BatchUploadService.update(batchItem._id, {
+      date_started: new Date,
+      status:       BatchUploadService.BATCH_STATUS.STARTED,
+    })
+
     fileBuffer = await download(batchItem.file_url)
   } catch (err) {
-    await BatchUploadService.setDateStoppedByObjectID(batchItem._id)
+    await BatchUploadService.update(batchItem._id, {
+      date_aborted: new Date,
+      status:       BatchUploadService.BATCH_STATUS.ABORTED,
+    })
     return new MessageResponse(`Couldn't fetch file: ${err}`, false, true)
   }
 
@@ -55,44 +69,47 @@ async function consume(data) {
     const csvString = fileBuffer.toString("utf-8")
     const parsedData = await ParseCSVString(csvString)
 
-    // Parse data into Products
-    parsedData.forEach((row, index) => {
-      validationErrors.push(...validateDocumentForInsert(row, index))
-    })
+    const categoryNames = _.uniqBy(parsedData, "Category Name").map(row => row["Category Name"])
+    const categoryList = await ProductCategoriesService.getCategoryByNames(categoryNames)
 
+    // Validate the parsed data
+    for (let index = 0; index < parsedData.length; index++) {
+      const row = parsedData[index]
+      const rowErrors = await validateDataForInsert(row, parsedData, categoryList)
+      if (rowErrors.length > 0) {
+        validationErrors.push({
+          row_no: index + 1,
+          errors: rowErrors,
+        })
+      }
+    }
+
+    // If validation has errors, save details into batch db and skip the insert
     if (validationErrors.length > 0) {
-      // TODO: save into batch db
+      await BatchUploadService.update(batchItem._id, {
+        date_aborted: new Date,
+        status:       BatchUploadService.BATCH_STATUS.ABORTED,
+        errors:       validationErrors,
+      })
       return new MessageResponse(`Validation failed: ${batchID}`, false, false)
     }
 
-    productsToInsert = parsedData.map((row, index) => {
-      const product = {}
-      product.sku = row["SKU"]
-      product.product_id = row["Product ID"]
-      product.name = row["Product Name"]
-      product.description = row["Long Description"]
-      product.brand = row["Brand"]
-      product.images = []
-      product.price = row["Price"]
-      product.commission = row["Commission"]
-      product.duty_free = row["Duty Free"]
-      product.country_hints = row["Country Hints"]
-      product.price_or_exclusive = row["Price or Exclusive"]
+    // Upload images to cloudinary
+    for (let index = 0; index < parsedData.length; index++) {
+      const imageUrls = parsedData[index]["Image URLs"].split("|")
+      parsedData[index]["Image URLs"] = await cloudinary.uploadImageURIs(imageUrls)
+    }
 
-      product.attributes = []
+    // Parse data into a valid Products Document
+    productsToInsert = await getValidDocumentsForInsert(parsedData, categoryList)
 
-      // Arrange attributes
-      Object.getOwnPropertyNames(row)
-        .filter(property => property.substring(0, 5) === "attr:")
-        .forEach(attr => {
-          if (row[attr]) {
-            product.attributes.push({ name: attr.split(":")[1], value: row[attr] })
-          }
-        })
-      return product
+    await BatchUploadService.update(batchItem._id, {
+      date_parsed: new Date(),
+      status:      BatchUploadService.BATCH_STATUS.PARSED,
+      data:        { products: productsToInsert },
     })
   } catch (err) {
-    await BatchUploadService.setDateStoppedByObjectID(batchItem._id)
+    await BatchUploadService.update(batchItem._id, { date_stopped: new Date(), status: "stopped" })
     return new MessageResponse(`Couldn't read file: ${err}`, false, false)
   }
 
@@ -102,25 +119,207 @@ async function consume(data) {
     const insertedResponse = await ProductsService.addProducts(productsToInsert)
     totalCount = insertedResponse.insertedCount
   } catch (err) {
-    await BatchUploadService.setDateStoppedByObjectID(batchItem._id)
+    await BatchUploadService.update(batchItem._id, {
+      date_aborted: new Date,
+      status:       BatchUploadService.BATCH_STATUS.ABORTED,
+    })
     return new MessageResponse(`Error while creating products: ${err}`, false, true)
   }
 
-  await BatchUploadService.setDateCompletedByObjectID(batchItem._id)
+  await BatchUploadService.update(batchItem._id, {
+    date_completed: new Date,
+    status:         BatchUploadService.BATCH_STATUS.COMPLETED,
+  })
 
   // Return success
   return new MessageResponse(`Created ${totalCount} products`, true)
 }
 
-function validateDocumentForInsert(documentToInsert, rowIndex) {
-  let errors = []
+async function getValidDocumentsForInsert(parsedData, categoryList) {
+  return await Promise.all(parsedData.map(async row => {
+      const product = {
+        date_created:        new Date(),
+        date_updated:        null,
+        enabled:             true,
+        discontinued:        false,
+        tags:                [],
+        code:                "",
+        tax_class:           "",
+        related_product_ids: [],
+        prices:              [],
+        cost_price:          0,
+        sale_price:          0,
+        service_fee:         5,
+        quantity_inc:        1,
+        quantity_min:        1,
+        weight:              0,
+        stock_quantity:      0,
+        position:            null,
+        date_stock_expected: null,
+        date_sale_from:      null,
+        date_sale_to:        null,
+        stock_tracking:      false,
+        stock_preorder:      false,
+        stock_backorder:     false,
+        dimensions:          {
+          length: 0,
+          width:  0,
+          height: 0,
+        },
+        options:             [],
+      }
 
-  const imageURLs = documentToInsert["Image URLs"].split("|")
-  if (imageUrls.length === 0) {
-    errors.push(`At least one image url is required @ row#${index}`)
+      product.sku = row["SKU"]
+      product.product_id = row["Product ID"]
+      product.name = row["Product Name"]
+      product.description = row["Long Description"]
+      product.brand = row["Brand"]
+      product.regular_price = row["Price"]
+      product.commission = row["Commission %"]
+      product.duty_free = row["Duty Free"]
+      product.country_hints = row["Country Hints"].split("|")
+      product.price_or_exclusive = row["Price or Exclusive"]
+      product.images = row["Image URLs"]
+      product.attributes = []
+      product.variants = []
+
+      // Fetch and assign category id
+      const categoryID = categoryList.find(category => category.name === row["Category Name"])._id
+      product.category_id = categoryID
+      product.category_ids = [categoryID]
+
+      // Arrange attributes
+      Object.getOwnPropertyNames(row)
+        .filter(property => property.substring(0, 5) === "attr:")
+        .forEach(attr => {
+          if (row[attr]) {
+            product.attributes.push({ name: attr.split(":")[1], value: row[attr] })
+          }
+        })
+
+      // Arrange variants
+      Object.getOwnPropertyNames(row)
+        .filter(property => property.substring(0, 4) === "var:")
+        .forEach(attr => {
+          if (row[attr]) {
+            product.variants.push({ name: attr.split(":")[1], value: row[attr] })
+          }
+        })
+      return product
+    }),
+  )
+}
+
+async function validateDataForInsert(documentToInsert, parsedData, categoryList) {
+  const validationErrors = []
+  const requiredFields = [
+    "SKU", "Product ID", "Product Name", "Long Description", "Brand", "Category Name", "Image URLs", "Price",
+    "Commission %", "Duty Free", "Country Hints", "Price or Exclusive",
+  ]
+
+  for (let index = 0; index < requiredFields.length; index++) {
+    const field = requiredFields[index]
+    const error = {
+      column_no:      index + 1,
+      column_name:    field,
+      error_messages: [],
+    }
+    const fieldValue = documentToInsert[field]
+
+    if (fieldValue === undefined || fieldValue === "") {
+      error.error_messages.push("Required.")
+    } else {
+      if (field === "SKU") {
+        const hasDuplicatedSKU = parsedData.filter(data => data["SKU"] === fieldValue).length > 1
+        if (hasDuplicatedSKU) {
+          error.error_messages.push(`Duplicated SKU.`)
+        }
+
+        const validSKU = await ProductsService.validateSKU(fieldValue)
+        if (!validSKU) {
+          error.error_messages.push("Already exists.")
+        }
+      }
+
+      if (field === "Slug") {
+        const validSlug = await ProductsService.validateSlug(fieldValue)
+        if (!validSlug) {
+          error.error_messages.push("Already exists.")
+        }
+      }
+
+      if (field === "Category Name") {
+        const category = categoryList.find(category => category.name === fieldValue)
+        if (category === undefined) {
+          error.error_messages.push("Invalid Category Name.")
+        }
+      }
+
+      if (field === "Product ID" && isNaN(fieldValue) === true) {
+        error.error_messages.push("Must be a number.")
+      }
+
+      if (field === "Price" && isNaN(fieldValue) === true) {
+        error.error_messages.push("Must be a number.")
+      }
+
+      if (field === "Duty Free" && fieldValue !== "true" && fieldValue !== "false") {
+        error.error_messages.push("Must be a boolean.")
+      }
+
+      if (field === "Price or Exclusive" && fieldValue !== "price" && fieldValue !== "exclusive") {
+        error.error_messages.push("Not a valid value.")
+      }
+
+      if (field === "Country Hints") {
+        const countryHints = fieldValue.split("|")
+        error.error_messages.push(...await validateCountryHints(countryHints))
+      }
+
+      if (field === "Image URLs") {
+        const imageURLs = fieldValue.split("|")
+        error.error_messages.push(...await validateImageURLs(imageURLs))
+      }
+
+    }
+
+    if (error.error_messages.length > 0) {
+      validationErrors.push(error)
+    }
   }
-  // TODO: get headers from imageURLs to check availability
+  return validationErrors
+}
 
+async function validateCountryHints(countryHints) {
+  const errors = []
+  for (let index = 0; index < countryHints.length; index++) {
+    const countryHint = countryHints[index]
+    if (countries.find(country => country.code === countryHint) === undefined) {
+      errors.push(`${countryHint} is not a valid country code.`)
+    }
+  }
+  return errors
+}
+
+async function validateImageURLs(imageURLs) {
+  const errors = []
+  for (let index = 0; index < imageURLs.length; index++) {
+    const imageURL = imageURLs[index]
+    try {
+      if (imageURL.substring(0, 4) !== "http") {
+        errors.push(`Image URL #${index + 1} is not a valid url.`)
+      } else {
+        // Get headers from imageURLs to check availability
+        const response = await rp({ method: "HEAD", uri: imageURL })
+        if (response["content-type"].substring(0, 5) !== "image") {
+          errors.push(`Image URL #${index + 1} is not an image.`)
+        }
+      }
+    } catch (err) {
+      errors.push(`Unable to access Image Url #${index + 1}.`)
+    }
+  }
+  return errors
 }
 
 module.exports = ProductBatchUploadQueue

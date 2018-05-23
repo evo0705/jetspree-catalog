@@ -85,7 +85,7 @@ db.productCategories.createIndex({ slug: 1 });
 db.products.createIndex({ slug: 1 });
 db.products.createIndex({ enabled: 1 });
 db.products.createIndex({ category_id: 1 });
-db.products.createIndex({ sku: 1 });
+db.products.createIndex({ sku: 1 }, { unique: true });
 db.products.createIndex({'attributes.name' : 1, 'attributes.value' : 1});
 db.products.createIndex({
   'name': 'text',

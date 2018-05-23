@@ -25,26 +25,16 @@ class CloudinaryService {
   }
 
   async addImage(productId, req) {
-    let uploadedFiles = [];
     const imageFiles = req.files;
     const dataURIs = imageFiles.map(image => {
       return "data:" + image.mimetype + ";base64," + image.buffer.toString("base64");
     })
-    const uploadedImages = await this.uploadImageURIs(dataURIs);
-
-    return uploadedImages.map(image => {
-      return {
-        "id": new ObjectID(),
-        "alt": "",
-        "position": 99,
-        "external_id": image.public_id
-      }
-    });
+    return await this.uploadImageURIs(dataURIs);
   }
 
   async uploadImageURIs(URIs) {
     try {
-      return await Promise.all(URIs.map(async URI => {
+      const uploadedImages = await Promise.all(URIs.map(async URI => {
         try {
           return await cloudinary.v2.uploader.upload(URI, {
             width:  MAX_SIZE,
@@ -56,6 +46,15 @@ class CloudinaryService {
           return err
         }
       }))
+
+      return uploadedImages.map(image => {
+        return {
+          "id": new ObjectID(),
+          "alt": "",
+          "position": 99,
+          "external_id": image.public_id
+        }
+      });
     } catch (err) {
       console.error("Cloudinary upload failed:", err)
       return err;

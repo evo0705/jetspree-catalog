@@ -26,6 +26,13 @@ class BatchUploadService {
       CREATE_PRODUCTS: "create_products",
       DELETE_PRODUCTS: "delete_products",
     }
+    this.BATCH_STATUS = {
+      QUEUED:    "queued",
+      STARTED:   "started",
+      PARSED:    "parsed",
+      ABORTED:   "aborted",
+      COMPLETED: "completed",
+    }
   }
 
   getErrorMessage(err) {
@@ -67,12 +74,12 @@ class BatchUploadService {
         file_key:       fileKey,
         file_size:      fileSize,
         file_url:       uploadedFile.Location,
-        status:         "queued",
+        status:         this.BATCH_STATUS.QUEUED,
         action:         batchAction,
-        error_message:  null,
-        date_parsed:    null,
+        errors:         [],
         date_started:   null,
-        date_stopped:   null,
+        date_parsed:    null,
+        date_aborted:   null,
         date_completed: null,
         date_uploaded:  new Date(),
       }
@@ -94,37 +101,14 @@ class BatchUploadService {
     }
   }
 
-  async setDateStartedByObjectID(batchObjectID) {
+  async update(batchObjectID, data) {
     try {
-      await mongo.db.collection("batch").updateOne({ _id: batchObjectID }, { $set: { date_started: new Date() } })
+      await mongo.db.collection("batch").updateOne({ _id: batchObjectID }, { $set: data })
     } catch (err) {
       throw this.getErrorMessage(err)
     }
   }
 
-  async setDateStoppedByObjectID(batchObjectID) {
-    try {
-      await mongo.db.collection("batch").updateOne({ _id: batchObjectID }, { $set: { date_stopped: new Date() } })
-    } catch (err) {
-      throw this.getErrorMessage(err)
-    }
-  }
-
-  async setDateParsedByObjectID(batchObjectID) {
-    try {
-      await mongo.db.collection("batch").updateOne({ _id: batchObjectID }, { $set: { date_parsed: new Date() } })
-    } catch (err) {
-      throw this.getErrorMessage(err)
-    }
-  }
-
-  async setDateCompletedByObjectID(batchObjectID) {
-    try {
-      await mongo.db.collection("batch").updateOne({ _id: batchObjectID }, { $set: { date_completed: new Date() } })
-    } catch (err) {
-      throw this.getErrorMessage(err)
-    }
-  }
 }
 
 module.exports = new BatchUploadService()
