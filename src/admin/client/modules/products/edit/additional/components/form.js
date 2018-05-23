@@ -75,8 +75,16 @@ const RelatedProductActions = ({ fields, index }) => (
 const RelatedProduct = ({ settings, product, actions }) => {
   if(product){
     const priceFormatted = helper.formatCurrency(product.price, settings);
-    const imageUrl = product && product.images.length > 0 ? product.images[0].url : null;
-    const thumbnailUrl = helper.getThumbnailUrl(imageUrl, 100);
+    const image = product && product.images.length > 0 ? product.images[0] : null;
+    const imageUrl = image ? image.url : null;
+    let thumbnailUrl = null;
+
+    if(image && image.external_id !== null) {
+      thumbnailUrl = helper.getCloudinaryThumbnailUrl(imageUrl, 100);
+    } else {
+      thumbnailUrl = helper.getThumbnailUrl(imageUrl, 100);
+    }
+
     return (
       <ProductShort
         id={product.id}

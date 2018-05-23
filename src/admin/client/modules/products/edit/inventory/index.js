@@ -12,11 +12,13 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    onSubmit: (values) => {
+    onSubmit: (values) => {      
       dispatch(updateProduct({
         id: values.id,
         regular_price: values.regular_price,
         sale_price: values.sale_price,
+        service_fee: values.service_fee,
+        country_hints: values.country_hints,
         date_sale_from: values.date_sale_from,
         date_sale_to: values.date_sale_to,
         sku: values.sku,

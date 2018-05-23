@@ -13,7 +13,6 @@ const initialState = {
   isUpdating: false,
   loadingItems: false,
   uploadingImages: false,
-
   errorFetchEdit: null,
   errorLoadingItems: null,
   errorUpdate: null,

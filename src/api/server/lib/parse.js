@@ -144,6 +144,18 @@ const getOrderAddress = (address) => {
   ) : emptyAddress;
 }
 
+const getArrayFromString = (value) => {
+  if(Array.isArray(value) === true) {
+    return value;
+  }
+
+  if(value && value.length > 0) {
+    return value.split(',');
+  } else {
+    return [];
+  }
+}
+
 module.exports = {
   getString: getString,
   getObjectIDIfValid: getObjectIDIfValid,
@@ -155,5 +167,6 @@ module.exports = {
   getBooleanIfValid: getBooleanIfValid,
   getBrowser: getBrowser,
   getCustomerAddress: getCustomerAddress,
-  getOrderAddress: getOrderAddress
+  getOrderAddress: getOrderAddress,
+  getArrayFromString: getArrayFromString
 }

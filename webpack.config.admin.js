@@ -25,8 +25,8 @@ module.exports = {
   output: {
     publicPath: '/',
     path: path.resolve(__dirname, 'public'),
-    filename: 'admin-assets/js/[name]-[chunkhash].js',
-    chunkFilename: 'admin-assets/js/[name]-[chunkhash].js'
+    filename: 'admin-assets/js/[name]-[hash].js',
+    chunkFilename: 'admin-assets/js/[name]-[hash].js'
   },
 
   optimization: {
@@ -47,7 +47,8 @@ module.exports = {
       src: path.resolve(__dirname, 'src/admin/client'),
       routes: path.resolve(__dirname, 'src/admin/client/routes'),
       modules: path.resolve(__dirname, 'src/admin/client/modules'),
-      lib: path.resolve(__dirname, 'src/admin/client/lib')
+      lib: path.resolve(__dirname, 'src/admin/client/lib'),
+      ApiClient: path.resolve(__dirname, 'src/api-client')
     }
   },
 
@@ -61,30 +62,30 @@ module.exports = {
         test: /\.css$/,
         include: [ path.resolve(__dirname, "public") ],
         use: ExtractTextPlugin.extract({
-            use: [
-                {
-                    loader: "css-loader",
-                    options: {
-                        modules: false,
-                        importLoaders: true
-                    }
-                }
-            ]
+          use: [
+            {
+              loader: "css-loader",
+              options: {
+                modules: false,
+                importLoaders: true
+              }
+            }
+          ]
         })
       }, {
         test: /\.css$/,
         exclude: /node_modules|public/,
         use: ExtractTextPlugin.extract({
-            use: [
-                {
-                    loader: "css-loader",
-                    options: {
-                        modules: true,
-                        importLoaders: true,
-                        localIdentName: "[name]__[local]___[hash:base64:5]"
-                    }
-                }
-            ]
+          use: [
+            {
+              loader: "css-loader",
+              options: {
+                modules: true,
+                importLoaders: true,
+                localIdentName: "[name]__[local]___[hash:base64:5]"
+              }
+            }
+          ]
         })
       }
     ]
@@ -93,7 +94,7 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({ APPLICATION_CONFIG: JSON.stringify(applicationConfig) }),
     new webpack.DefinePlugin({ APPLICATION_TEXT: JSON.stringify(applicationText) }),
-    new ExtractTextPlugin("admin-assets/css/bundle-[contenthash].css"),
+    new ExtractTextPlugin("admin-assets/css/bundle-[hash].css"),
     new HtmlWebpackPlugin({
       template: 'src/admin/client/index.html',
       language: applicationConfig.language,
@@ -104,6 +105,12 @@ module.exports = {
       banner: `Created: ${new Date().toUTCString()}`,
       raw: false,
       entryOnly: false
-    })
+    }),
+    new webpack.DefinePlugin({
+      "process.env": {
+        API_BASE_URL:       JSON.stringify(process.env.API_BASE_URL || 'http://localhost:3001/api/v1'),
+        API_WEB_SOCKET_URL: JSON.stringify(process.env.API_WEB_SOCKET_URL || 'ws://localhost:3001'),
+      },
+    }),
   ]
 };

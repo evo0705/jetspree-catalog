@@ -1,16 +1,22 @@
-'use strict';
+"use strict"
+
+const multer = require("multer")
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage })
 
 const security = require('../lib/security');
+const settings = require('../lib/settings');
 const ProductsService = require('../services/products/products');
 const ProductOptionsService = require('../services/products/options');
 const ProductOptionValuesService = require('../services/products/optionValues');
 const ProductVariantsService = require('../services/products/variants');
 const ProductImagesService = require('../services/products/images');
+const BatchUploadService = require('../services/products/batch');
 
 class ProductsRoute {
   constructor(router) {
-    this.router = router;
-    this.registerRoutes();
+    this.router = router
+    this.registerRoutes()
   }
 
   registerRoutes() {
@@ -21,7 +27,7 @@ class ProductsRoute {
     this.router.delete('/v1/products/:productId', security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.deleteProduct.bind(this));
 
     this.router.get('/v1/products/:productId/images', security.checkUserScope.bind(this, security.scope.READ_PRODUCTS), this.getImages.bind(this));
-    this.router.post('/v1/products/:productId/images', security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.addImage.bind(this));
+    this.router.post('/v1/products/:productId/images', security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.assignUploadType.bind(this), this.addImage.bind(this));
     this.router.put('/v1/products/:productId/images/:imageId', security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.updateImage.bind(this));
     this.router.delete('/v1/products/:productId/images/:imageId', security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.deleteImage.bind(this));
 
@@ -45,12 +51,18 @@ class ProductsRoute {
     this.router.put('/v1/products/:productId/variants/:variantId', security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.updateVariant.bind(this));
     this.router.delete('/v1/products/:productId/variants/:variantId', security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.deleteVariant.bind(this));
     this.router.put('/v1/products/:productId/variants/:variantId/options', security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.setVariantOption.bind(this));
+
+    this.router.get('/v1/products/batch/list', security.checkUserScope.bind(this, security.scope.READ_PRODUCTS), this.getBatchList.bind(this));
+    this.router.get('/v1/products/batch/:batchId', security.checkUserScope.bind(this, security.scope.READ_PRODUCTS), this.getBatchItem.bind(this));
+    this.router.post('/v1/products/batch', security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), upload.single('file'), this.uploadBatchFile.bind(this));
+
+    this.router.get("/v1/products_by_slug/:slug", security.checkUserScope.bind(this, security.scope.READ_PRODUCTS), this.getSingleProductBySlug.bind(this))
   }
 
   getProducts(req, res, next) {
     ProductsService.getProducts(req.query).then(data => {
       res.send(data)
-    }).catch(next);
+    }).catch(next)
   }
 
   getSingleProduct(req, res, next) {
@@ -60,13 +72,23 @@ class ProductsRoute {
       } else {
         res.status(404).end()
       }
-    }).catch(next);
+    }).catch(next)
+  }
+
+  getSingleProductBySlug(req, res, next) {
+    ProductsService.getSingleProductBySlug(req.params.slug).then(data => {
+      if (data) {
+        res.send(data)
+      } else {
+        res.status(404).end()
+      }
+    }).catch(next)
   }
 
   addProduct(req, res, next) {
     ProductsService.addProduct(req.body).then(data => {
       res.send(data)
-    }).catch(next);
+    }).catch(next)
   }
 
   updateProduct(req, res, next) {
@@ -76,7 +98,7 @@ class ProductsRoute {
       } else {
         res.status(404).end()
       }
-    }).catch(next);
+    }).catch(next)
   }
 
   deleteProduct(req, res, next) {
@@ -84,29 +106,29 @@ class ProductsRoute {
       res.status(data
         ? 200
         : 404).end()
-    }).catch(next);
+    }).catch(next)
   }
 
   getImages(req, res, next) {
     ProductImagesService.getImages(req.params.productId).then(data => {
       res.send(data)
-    }).catch(next);
+    }).catch(next)
   }
 
   async addImage(req, res, next) {
-    await ProductImagesService.addImage(req, res, next);
+    await ProductImagesService.addImage(req, res, next)
   }
 
   updateImage(req, res, next) {
     ProductImagesService.updateImage(req.params.productId, req.params.imageId, req.body).then(data => {
       res.end()
-    });
+    })
   }
 
   deleteImage(req, res, next) {
     ProductImagesService.deleteImage(req.params.productId, req.params.imageId).then(data => {
       res.end()
-    });
+    })
   }
 
   isSkuExists(req, res, next) {
@@ -114,7 +136,7 @@ class ProductsRoute {
       res.status(exists
         ? 200
         : 404).end()
-    }).catch(next);
+    }).catch(next)
   }
 
   isSlugExists(req, res, next) {
@@ -122,13 +144,13 @@ class ProductsRoute {
       res.status(exists
         ? 200
         : 404).end()
-    }).catch(next);
+    }).catch(next)
   }
 
   getOptions(req, res, next) {
     ProductOptionsService.getOptions(req.params.productId).then(data => {
       res.send(data)
-    }).catch(next);
+    }).catch(next)
   }
 
   getSingleOption(req, res, next) {
@@ -138,31 +160,31 @@ class ProductsRoute {
       } else {
         res.status(404).end()
       }
-    }).catch(next);
+    }).catch(next)
   }
 
   addOption(req, res, next) {
     ProductOptionsService.addOption(req.params.productId, req.body).then(data => {
       res.send(data)
-    }).catch(next);
+    }).catch(next)
   }
 
   updateOption(req, res, next) {
     ProductOptionsService.updateOption(req.params.productId, req.params.optionId, req.body).then(data => {
       res.send(data)
-    }).catch(next);
+    }).catch(next)
   }
 
   deleteOption(req, res, next) {
     ProductOptionsService.deleteOption(req.params.productId, req.params.optionId).then(data => {
       res.send(data)
-    }).catch(next);
+    }).catch(next)
   }
 
   getOptionValues(req, res, next) {
     ProductOptionValuesService.getOptionValues(req.params.productId, req.params.optionId).then(data => {
       res.send(data)
-    }).catch(next);
+    }).catch(next)
   }
 
   getSingleOptionValue(req, res, next) {
@@ -172,56 +194,76 @@ class ProductsRoute {
       } else {
         res.status(404).end()
       }
-    }).catch(next);
+    }).catch(next)
   }
 
   addOptionValue(req, res, next) {
     ProductOptionValuesService.addOptionValue(req.params.productId, req.params.optionId, req.body).then(data => {
       res.send(data)
-    }).catch(next);
+    }).catch(next)
   }
 
   updateOptionValue(req, res, next) {
     ProductOptionValuesService.updateOptionValue(req.params.productId, req.params.optionId, req.params.valueId, req.body).then(data => {
       res.send(data)
-    }).catch(next);
+    }).catch(next)
   }
 
   deleteOptionValue(req, res, next) {
     ProductOptionValuesService.deleteOptionValue(req.params.productId, req.params.optionId, req.params.valueId).then(data => {
       res.send(data)
-    }).catch(next);
+    }).catch(next)
   }
 
   getVariants(req, res, next) {
     ProductVariantsService.getVariants(req.params.productId).then(data => {
       res.send(data)
-    }).catch(next);
+    }).catch(next)
   }
 
   addVariant(req, res, next) {
     ProductVariantsService.addVariant(req.params.productId, req.body).then(data => {
       res.send(data)
-    }).catch(next);
+    }).catch(next)
   }
 
   updateVariant(req, res, next) {
     ProductVariantsService.updateVariant(req.params.productId, req.params.variantId, req.body).then(data => {
       res.send(data)
-    }).catch(next);
+    }).catch(next)
   }
 
   deleteVariant(req, res, next) {
     ProductVariantsService.deleteVariant(req.params.productId, req.params.variantId).then(data => {
       res.send(data)
-    }).catch(next);
+    }).catch(next)
   }
 
   setVariantOption(req, res, next) {
     ProductVariantsService.setVariantOption(req.params.productId, req.params.variantId, req.body).then(data => {
       res.send(data)
-    }).catch(next);
+    }).catch(next)
+  }
+
+  assignUploadType(req, res, next) {
+    if (settings.enableCloudinary === true) {
+      upload.array("file")(req, res, next)
+    } else {
+      next()
+    }
+  }
+
+  async getBatchList(req, res, next) {
+    await BatchUploadService.getBatchList(req, res, next);
+  }
+
+  async getBatchItem(req, res, next) {
+    await BatchUploadService.getBatchItem(req, res, next);
+  }
+
+  async uploadBatchFile(req, res, next) {
+    await BatchUploadService.uploadFile(req, res, next);
   }
 }
 
-module.exports = ProductsRoute;
+module.exports = ProductsRoute

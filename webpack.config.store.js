@@ -12,8 +12,8 @@ module.exports = {
   output: {
     publicPath: '/',
     path: path.resolve(__dirname, 'theme'),
-    filename: 'assets/js/[name]-[chunkhash].js',
-    chunkFilename: 'assets/js/[name]-[chunkhash].js'
+    filename: 'assets/js/[name]-[hash].js',
+    chunkFilename: 'assets/js/[name]-[hash].js'
   },
 
   optimization: {
@@ -26,6 +26,12 @@ module.exports = {
           enforce: true
         },
       }
+    }
+  },
+
+  resolve: {
+    alias: {      
+      ApiClient: path.resolve(__dirname, 'src/api-client')
     }
   },
 
@@ -63,7 +69,7 @@ module.exports = {
   },
 
   plugins: [
-    new ExtractTextPlugin("assets/css/bundle-[contenthash].css"),
+    new ExtractTextPlugin("assets/css/bundle-[hash].css"),
     new HtmlWebpackPlugin({
       template: 'theme/index.html',
       inject: 'body',
@@ -73,6 +79,11 @@ module.exports = {
       banner: `Created: ${new Date().toUTCString()}`,
       raw: false,
       entryOnly: false
-    })
+    }),
+    new webpack.DefinePlugin({
+      "process.env": {
+        AJAX_BASE_URL: JSON.stringify(process.env.AJAX_BASE_URL || 'http://localhost:3001/ajax')
+      },
+    }),
   ]
 };

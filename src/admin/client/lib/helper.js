@@ -44,6 +44,16 @@ export const getThumbnailUrl = (originalUrl, width) => {
   }
 }
 
+export const getCloudinaryThumbnailUrl = (originalUrl, width) => {
+  if(originalUrl && originalUrl.length > 0) {
+    const pos = originalUrl.lastIndexOf('/');
+    const thumbnailUrl = originalUrl.substring(0, pos) + `,w_${width}/` + originalUrl.substring(pos + 1);
+    return thumbnailUrl;
+  } else {
+    return '';
+  }
+}
+
 export const getOrderFieldLabelByKey = (key) => {
   switch (key) {
     case 'full_name':

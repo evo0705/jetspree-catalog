@@ -1,7 +1,7 @@
-import CezerinClient from 'cezerin-client'
+import ApiClient from 'ApiClient'
 import clientSettings from './settings'
 
-const api = new CezerinClient({
+const api = new ApiClient({
   ajaxBaseUrl: clientSettings.ajaxBaseUrl || '/ajax'
 });
 
