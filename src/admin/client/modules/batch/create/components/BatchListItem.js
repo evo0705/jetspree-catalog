@@ -3,6 +3,13 @@ import { TableRow, TableRowColumn } from "material-ui/Table"
 import { Link } from "react-router-dom"
 import moment from "moment"
 
+const bytesToSize = (bytes) => {
+  var sizes = ["Bytes", "KB", "MB", "GB", "TB"]
+  if (bytes == 0) return "0 Byte"
+  var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)))
+  return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i]
+}
+
 const BatchListItem = ({ batchItem }) => {
   return (
     <TableRow>
@@ -11,9 +18,8 @@ const BatchListItem = ({ batchItem }) => {
           { batchItem.file_name }
         </Link>
       </TableRowColumn>
-      <TableRowColumn style={{textAlign: 'center'}}>{ batchItem.file_size }</TableRowColumn>
+      <TableRowColumn style={{textAlign: 'center'}}>{ bytesToSize(batchItem.file_size) }</TableRowColumn>
       <TableRowColumn style={{textAlign: 'center'}}>{ batchItem.status }</TableRowColumn>
-      <TableRowColumn>{ batchItem.error_message }</TableRowColumn>
       <TableRowColumn style={{textAlign: 'center'}}>
         {
           batchItem.date_uploaded ?

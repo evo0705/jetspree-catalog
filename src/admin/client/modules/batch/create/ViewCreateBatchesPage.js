@@ -11,6 +11,7 @@ import {
 import Subheader from "material-ui/Subheader"
 import Divider from "material-ui/Divider"
 import LinearProgress from "material-ui/LinearProgress"
+import ErrorItem from "./components/ErrorItem"
 import { fetchBatchItem } from "../actions"
 import messages from "lib/text"
 import style from "./style.css"
@@ -22,13 +23,25 @@ class ViewCreateBatchesPage extends React.Component {
   }
 
   componentDidMount() {
-    const FIVE_SECONDS = 5000
-    this.intervalId = setInterval(() => this.props.fetchBatchItem(), FIVE_SECONDS)
     this.props.fetchBatchItem()
+    this.pollBatchItem()
   }
 
   componentWillUnmount() {
     clearInterval(this.intervalId)
+  }
+
+  pollBatchItem() {
+    const FIVE_SECONDS = 5000
+    const { batchItem } = this.props
+
+    this.intervalId = setInterval(() => {
+      if(batchItem.status !== "aborted" || batchItem.status !== "completed") {
+        this.props.fetchBatchItem()
+      } else {
+        clearInterval(this.intervalId)
+      }
+    }, FIVE_SECONDS)
   }
 
   render() {
@@ -42,12 +55,12 @@ class ViewCreateBatchesPage extends React.Component {
       <div className={style.batchDetailContainer}>
         <Subheader>Batch Upload Products</Subheader>
           {
-            batchItem.status !== 'completed' || batchItem.status !== 'stopped' ?
+            batchItem.status !== 'aborted' || batchItem.status === "completed" ?
               <LinearProgressIndicator/>
             : null
           }
         <Divider />
-        <Table>
+        <Table style={{tableLayout: "auto"}}>
           <TableBody displayRowCheckbox={false}>
             <TableRow>
               <TableRowColumn>{messages.batch_file_name}</TableRowColumn>
@@ -64,10 +77,6 @@ class ViewCreateBatchesPage extends React.Component {
             <TableRow>
               <TableRowColumn>{messages.batch_status}</TableRowColumn>
               <TableRowColumn>{batchItem.status}</TableRowColumn>
-            </TableRow>
-            <TableRow>
-              <TableRowColumn>{messages.batch_message}</TableRowColumn>
-              <TableRowColumn>{batchItem.error_message}</TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>{messages.batch_uploaded_at}</TableRowColumn>
@@ -99,6 +108,22 @@ class ViewCreateBatchesPage extends React.Component {
                 { batchItem.date_completed ? moment(batchItem.date_completed).format('MMMM Do YYYY h:mm:ss a') : 'N/A' }
               </TableRowColumn>
             </TableRow>
+            {
+              batchItem.errors && batchItem.errors.length > 0 ?
+                <TableRow style={{borderWidth: 0}}>
+                  <TableRowColumn colSpan={2} style={{textAlign: "center"}}>Error Messages</TableRowColumn>
+                </TableRow>
+              : null
+            }
+            {
+              batchItem.errors && batchItem.errors.length > 0 ?
+                batchItem.errors.map(error => {
+                  return (
+                    <ErrorItem error = { error }/>
+                  )
+                })
+              : 'N/A'
+            }
           </TableBody>
         </Table>
       </div>

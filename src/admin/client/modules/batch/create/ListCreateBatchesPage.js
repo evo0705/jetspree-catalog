@@ -34,15 +34,14 @@ class ListCreateBatchesPage extends React.Component {
         <Table>
           <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>
-              <TableHeaderColumn>{messages.batch_file_name}</TableHeaderColumn>
-              <TableHeaderColumn>{messages.batch_file_size}</TableHeaderColumn>
-              <TableHeaderColumn>{messages.batch_status}</TableHeaderColumn>
-              <TableHeaderColumn>{messages.batch_message}</TableHeaderColumn>
-              <TableHeaderColumn>{messages.batch_uploaded_at}</TableHeaderColumn>
-              <TableHeaderColumn>{messages.batch_started_at}</TableHeaderColumn>
-              <TableHeaderColumn>{messages.batch_parsed_at}</TableHeaderColumn>
-              <TableHeaderColumn>{messages.batch_stopped_at}</TableHeaderColumn>
-              <TableHeaderColumn>{messages.batch_completed_at}</TableHeaderColumn>
+              <TableHeaderColumn style={{textAlign: 'center'}}>{messages.batch_file_name}</TableHeaderColumn>
+              <TableHeaderColumn style={{textAlign: 'center'}}>{messages.batch_file_size}</TableHeaderColumn>
+              <TableHeaderColumn style={{textAlign: 'center'}}>{messages.batch_status}</TableHeaderColumn>
+              <TableHeaderColumn style={{textAlign: 'center'}}>{messages.batch_uploaded_at}</TableHeaderColumn>
+              <TableHeaderColumn style={{textAlign: 'center'}}>{messages.batch_started_at}</TableHeaderColumn>
+              <TableHeaderColumn style={{textAlign: 'center'}}>{messages.batch_parsed_at}</TableHeaderColumn>
+              <TableHeaderColumn style={{textAlign: 'center'}}>{messages.batch_stopped_at}</TableHeaderColumn>
+              <TableHeaderColumn style={{textAlign: 'center'}}>{messages.batch_completed_at}</TableHeaderColumn>
             </TableRow>
           </TableHeader>
           <TableBody>

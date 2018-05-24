@@ -16,7 +16,7 @@ function receiveBatchList(batchList) {
 
 function receiveBatchListError() {
   return {
-    type: t.REQUEST_BATCH_LIST_ERROR,
+    type: t.RECEIVE_BATCH_LIST_ERROR,
   }
 }
 
@@ -35,7 +35,7 @@ function receiveBatchItem(batchItem) {
 
 function receiveBatchItemError() {
   return {
-    type: t.REQUEST_BATCH_ITEM_ERROR,
+    type: t.RECEIVE_BATCH_ITEM_ERROR,
   }
 }
 
@@ -45,11 +45,19 @@ function batchUploadStart() {
   }
 }
 
-function batchUploadEnd() {
+function batchUploadEnd(batchUploadItem) {
   return {
     type: t.PRODUCT_BATCH_UPLOAD_END,
+    batchUploadItem,
   }
 }
+
+function batchUploadError() {
+  return {
+    type: t.PRODUCT_BATCH_UPLOAD_ERROR,
+  }
+}
+
 
 export function fetchBatchList() {
   return (dispatch, getState) => {
@@ -81,10 +89,10 @@ export function uploadBatchFile(formData) {
 
     return api.products.batch.upload(formData)
       .then(({ status, json }) => {
-        dispatch(batchUploadEnd())
+        dispatch(batchUploadEnd(json))
       })
       .catch(error => {
-        dispatch(batchUploadEnd())
+        dispatch(batchUploadError())
       })
   }
 }
