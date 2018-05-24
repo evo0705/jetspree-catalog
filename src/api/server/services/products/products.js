@@ -946,16 +946,6 @@ class ProductsService {
     }
   }
 
-  async validateSKU(sku){
-    const result = await mongo.db.collection("products").findOne({ sku })
-    return result === null
-  }
-
-  async validateSlug(slug){
-    const result = await mongo.db.collection("products").findOne({ slug })
-    return result === null
-  }
-
   isSlugExists(slug, productId) {
     let filter = {
       slug: utils.cleanSlug(slug),

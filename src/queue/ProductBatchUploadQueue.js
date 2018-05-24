@@ -10,6 +10,7 @@ const rp = require("request-promise")
 const countries = require("../api/server/lib/countries")
 const cloudinary = require("../api/server/services/products/cloudinary")
 const _ = require("lodash")
+const parse = require("../api/server/lib/parse")
 
 const BULK_PRODUCT_UPLOAD = "bulk_product_upload"
 
@@ -101,7 +102,7 @@ async function consume(data) {
     }
 
     // Parse data into a valid Products Document
-    productsToInsert = await getValidDocumentsForInsert(parsedData, categoryList)
+    productsToInsert = getValidDocumentsForInsert(parsedData, categoryList)
 
     await BatchUploadService.update(batchItem._id, {
       date_parsed: new Date(),
@@ -135,79 +136,77 @@ async function consume(data) {
   return new MessageResponse(`Created ${totalCount} products`, true)
 }
 
-async function getValidDocumentsForInsert(parsedData, categoryList) {
-  return await Promise.all(parsedData.map(async row => {
-      const product = {
-        date_created:        new Date(),
-        date_updated:        null,
-        enabled:             true,
-        discontinued:        false,
-        tags:                [],
-        code:                "",
-        tax_class:           "",
-        related_product_ids: [],
-        prices:              [],
-        cost_price:          0,
-        sale_price:          0,
-        service_fee:         5,
-        quantity_inc:        1,
-        quantity_min:        1,
-        weight:              0,
-        stock_quantity:      0,
-        position:            null,
-        date_stock_expected: null,
-        date_sale_from:      null,
-        date_sale_to:        null,
-        stock_tracking:      false,
-        stock_preorder:      false,
-        stock_backorder:     false,
-        dimensions:          {
-          length: 0,
-          width:  0,
-          height: 0,
-        },
-        options:             [],
-      }
+function getValidDocumentsForInsert(parsedData, categoryList) {
+  return parsedData.map(row => {
+    // Fetch category id
+    const categoryID = categoryList.find(category => category.name === row["Category Name"])._id
 
-      product.sku = row["SKU"]
-      product.product_id = row["Product ID"]
-      product.name = row["Product Name"]
-      product.description = row["Long Description"]
-      product.brand = row["Brand"]
-      product.regular_price = row["Price"]
-      product.commission = row["Commission %"]
-      product.duty_free = row["Duty Free"]
-      product.country_hints = row["Country Hints"].split("|")
-      product.price_or_exclusive = row["Price or Exclusive"]
-      product.images = row["Image URLs"]
-      product.attributes = []
-      product.variants = []
+    // Build attributes
+    const attributes = Object.getOwnPropertyNames(row)
+      .filter(property => property.substring(0, 5) === "attr:")
+      .map(attr => {
+        if (row[attr]) {
+          return { name: attr.split(":")[1], value: row[attr] }
+        }
+      })
 
-      // Fetch and assign category id
-      const categoryID = categoryList.find(category => category.name === row["Category Name"])._id
-      product.category_id = categoryID
-      product.category_ids = [categoryID]
+    // Build variants
+    const variants = Object.getOwnPropertyNames(row)
+      .filter(property => property.substring(0, 4) === "var:")
+      .map(attr => {
+        if (row[attr]) {
+          return { name: attr.split(":")[1], value: row[attr] }
+        }
+      })
 
-      // Arrange attributes
-      Object.getOwnPropertyNames(row)
-        .filter(property => property.substring(0, 5) === "attr:")
-        .forEach(attr => {
-          if (row[attr]) {
-            product.attributes.push({ name: attr.split(":")[1], value: row[attr] })
-          }
-        })
-
-      // Arrange variants
-      Object.getOwnPropertyNames(row)
-        .filter(property => property.substring(0, 4) === "var:")
-        .forEach(attr => {
-          if (row[attr]) {
-            product.variants.push({ name: attr.split(":")[1], value: row[attr] })
-          }
-        })
-      return product
-    }),
-  )
+    return {
+      sku:                 row["SKU"],
+      product_id:          row["Product ID"],
+      name:                row["Product Name"],
+      description:         row["Long Description"],
+      brand:               row["Brand"],
+      category_id:         categoryID,
+      category_ids:        [categoryID],
+      regular_price:       parse.getNumberIfPositive(row["Price"]) || 0,
+      commission:          parse.getNumberIfPositive(row["Commission %"]) || 5,
+      duty_free:           parse.getBooleanIfValid(row["Duty Free"], false),
+      country_hints:       row["Country Hints"].split("|"),
+      price_or_exclusive:  row["Price or Exclusive"],
+      images:              row["Image URLs"],
+      attributes:          attributes,
+      variants:            variants,
+      date_created:        new Date(),
+      date_updated:        null,
+      enabled:             true,
+      discontinued:        false,
+      tags:                [],
+      code:                "",
+      tax_class:           "",
+      related_product_ids: [],
+      prices:              [],
+      cost_price:          0,
+      sale_price:          0,
+      service_fee:         5,
+      quantity_inc:        1,
+      quantity_min:        1,
+      weight:              0,
+      stock_quantity:      0,
+      position:            null,
+      date_stock_expected: null,
+      date_sale_from:      null,
+      date_sale_to:        null,
+      stock_tracking:      false,
+      stock_preorder:      false,
+      stock_backorder:     false,
+      dimensions:          {
+        length: 0,
+        width:  0,
+        height: 0,
+      },
+      options:             [],
+      is_deleted:          false,
+    }
+  })
 }
 
 async function validateDataForInsert(documentToInsert, parsedData, categoryList) {
@@ -235,15 +234,15 @@ async function validateDataForInsert(documentToInsert, parsedData, categoryList)
           error.error_messages.push(`Duplicated SKU.`)
         }
 
-        const validSKU = await ProductsService.validateSKU(fieldValue)
-        if (!validSKU) {
+        const isSkuExists = await ProductsService.isSkuExists(fieldValue)
+        if (isSkuExists) {
           error.error_messages.push("Already exists.")
         }
       }
 
       if (field === "Slug") {
-        const validSlug = await ProductsService.validateSlug(fieldValue)
-        if (!validSlug) {
+        const isSlugExits = await ProductsService.isSlugExists(fieldValue)
+        if (isSlugExits) {
           error.error_messages.push("Already exists.")
         }
       }
@@ -273,7 +272,7 @@ async function validateDataForInsert(documentToInsert, parsedData, categoryList)
 
       if (field === "Country Hints") {
         const countryHints = fieldValue.split("|")
-        error.error_messages.push(...await validateCountryHints(countryHints))
+        error.error_messages.push(... validateCountryHints(countryHints))
       }
 
       if (field === "Image URLs") {
@@ -290,14 +289,13 @@ async function validateDataForInsert(documentToInsert, parsedData, categoryList)
   return validationErrors
 }
 
-async function validateCountryHints(countryHints) {
+function validateCountryHints(countryHints) {
   const errors = []
-  for (let index = 0; index < countryHints.length; index++) {
-    const countryHint = countryHints[index]
+  countryHints.forEach(countryHint => {
     if (countries.find(country => country.code === countryHint) === undefined) {
       errors.push(`${countryHint} is not a valid country code.`)
     }
-  }
+  })
   return errors
 }
 
