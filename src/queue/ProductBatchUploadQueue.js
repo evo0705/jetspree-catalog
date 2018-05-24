@@ -97,11 +97,14 @@ async function consume(data) {
       return new MessageResponse(`Validation failed: ${batchID}`, false, false)
     }
 
-    // Upload images to cloudinary
-    for (let index = 0; index < parsedData.length; index++) {
-      const imageUrls = parsedData[index]["Image URLs"].split("|")
-      parsedData[index]["Image URLs"] = await cloudinary.uploadImageURIs(imageUrls)
-    }
+    // Upload images to cloudinary asynchronously
+    const imageUploads = await Promise.all(parsedData.map(row => {
+      const imageUrls = row["Image URLs"].split("|")
+      return cloudinary.uploadImageURIs(imageUrls)
+    }))
+    parsedData.forEach((row, index) => {
+      row["Image URLs"] = imageUploads[index]
+    })
 
     // Parse data into a valid Products Document
     productsToInsert = getValidDocumentsForInsert(parsedData, categoryList)
