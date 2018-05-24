@@ -42,6 +42,10 @@ class ProductCategoriesService {
     return result
   }
 
+  async getCategoryByNames(categoryNames) {
+    return await mongo.db.collection("productCategories").find({ name: { $in: categoryNames } }).sort({ position: 1 }).toArray()
+  }
+
   getSingleCategory(id) {
     if (!ObjectID.isValid(id)) {
       return Promise.reject("Invalid identifier")

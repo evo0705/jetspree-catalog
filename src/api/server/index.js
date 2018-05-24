@@ -15,6 +15,7 @@ const dashboardWebSocket = require("./lib/dashboardWebSocket")
 const ajaxRouter = require("./ajaxRouter")
 const apiRouter = require("./apiRouter")
 const cors = require("cors")
+const Queue = require("../../queue/Queue")
 
 security.applyMiddleware(app)
 app.set("trust proxy", 1)
@@ -27,6 +28,8 @@ app.all("*", (req, res, next) => {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Key, Authorization")
   next()
 })
+
+Queue.init().catch()
 
 // Setup CORS
 const corsWhitelist = security.getAccessControlAllowOrigin()

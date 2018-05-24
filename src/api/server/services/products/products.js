@@ -574,6 +574,10 @@ class ProductsService {
       .then(res => this.getSingleProduct(res.ops[0]._id.toString()))
   }
 
+  async addProducts(dataToInsert) {
+    return await mongo.db.collection("products").insertMany(dataToInsert)
+  }
+
   updateProduct(id, data) {
     if (!ObjectID.isValid(id)) {
       return Promise.reject("Invalid identifier")
@@ -601,6 +605,16 @@ class ProductsService {
         }
         return deleteResponse.deletedCount > 0
       })
+  }
+
+  async deleteProductsByObjectIDArray(productObjectIDArray) {
+    productObjectIDArray.forEach(productObjectID => {
+      if (!ObjectID.isValid(productObjectID)) {
+        return Promise.reject("Invalid identifier")
+      }
+    })
+    const updated = await mongo.db.collection("products").updateMany({ "_id": { $in: productObjectIDArray } }, { $set: { is_deleted: true } })
+    return updated.matchedCount
   }
 
   getValidDocumentForInsert(data) {
