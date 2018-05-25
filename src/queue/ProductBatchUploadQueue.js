@@ -161,7 +161,10 @@ function getValidDocumentsForInsert(parsedData, categoryList) {
 
     return {
       sku:                 row["SKU"],
+      slug:                row["Slug"],
       product_id:          row["Product ID"],
+      meta_title:          row["Meta Title"],
+      meta_description:    row["Meta Description"],
       name:                row["Product Name"],
       description:         row["Long Description"],
       brand:               row["Brand"],
@@ -212,7 +215,7 @@ function getValidDocumentsForInsert(parsedData, categoryList) {
 async function validateDataForInsert(documentToInsert, parsedData, categoryList) {
   const validationErrors = []
   const requiredFields = [
-    "SKU", "Product ID", "Product Name", "Long Description", "Brand", "Category Name", "Image URLs", "Price",
+    "SKU", "Slug", "Product ID", "Meta Title", "Meta Description", "Product Name", "Long Description", "Brand", "Category Name", "Image URLs", "Price",
     "Commission %", "Duty Free", "Country Hints", "Price or Exclusive",
   ]
 
