@@ -54,15 +54,14 @@ function batchUploadEnd(batchUploadItem) {
 
 function batchUploadError() {
   return {
-    type: t.PRODUCT_BATCH_UPLOAD_ERROR,
   }
+    type: t.PRODUCT_BATCH_UPLOAD_ERROR,
 }
 
-
-export function fetchBatchList() {
+export function fetchBatchCreateProducts() {
   return (dispatch, getState) => {
     dispatch(requestBatchList())
-    return api.products.batch.list().then(({ status, json }) => {
+    return api.batches.createProducts.list().then(({ status, json }) => {
       dispatch(receiveBatchList(json))
     })
       .catch(error => {
@@ -71,10 +70,22 @@ export function fetchBatchList() {
   }
 }
 
-export function fetchBatchItem(batchId) {
+export function fetchBatchDeleteProducts() {
+  return (dispatch, getState) => {
+    dispatch(requestBatchList())
+    return api.batches.deleteProducts.list().then(({ status, json }) => {
+      dispatch(receiveBatchList(json))
+    })
+      .catch(error => {
+        dispatch(receiveBatchListError(error))
+      })
+  }
+}
+
+export function fetchBatchByID(batchId) {
   return (dispatch, getState) => {
     dispatch(requestBatchItem())
-    return api.products.batch.retrieve(batchId).then(({ status, json }) => {
+    return api.batches.retrieve(batchId).then(({ status, json }) => {
       dispatch(receiveBatchItem(json))
     })
       .catch(error => {
@@ -83,16 +94,30 @@ export function fetchBatchItem(batchId) {
   }
 }
 
-export function uploadBatchFile(formData) {
+export function uploadBatchCreateProductsFile(formData) {
   return (dispatch, getState) => {
     dispatch(batchUploadStart())
 
-    return api.products.batch.upload(formData)
+    return api.batches.createProducts.upload(formData)
       .then(({ status, json }) => {
         dispatch(batchUploadEnd(json))
       })
       .catch(error => {
         dispatch(batchUploadError())
+      })
+  }
+}
+
+export function uploadBatchDeleteProductsFile(formData) {
+  return (dispatch, getState) => {
+    dispatch(batchUploadStart())
+
+    return api.batches.deleteProducts.upload(formData)
+      .then(({ status, json }) => {
+        dispatch(batchUploadEnd())
+      })
+      .catch(error => {
+        dispatch(batchUploadEnd())
       })
   }
 }
