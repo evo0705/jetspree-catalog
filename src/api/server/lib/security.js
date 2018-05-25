@@ -15,6 +15,7 @@ const PATHS_WITH_OPEN_ACCESS = [
 const scope = {
   ADMIN: 'admin',
   DASHBOARD: 'dashboard',
+  READ_BATCHES: 'read:batches',
   READ_PRODUCTS: 'read:products',
   WRITE_PRODUCTS: 'write:products',
   READ_PRODUCT_CATEGORIES: 'read:product_categories',

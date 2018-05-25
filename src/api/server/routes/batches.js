@@ -16,13 +16,13 @@ class BatchesRoute {
   }
 
   registerRoutes() {
-    this.router.get("/v1/batches/create-products", security.checkUserScope.bind(this, security.scope.READ_PRODUCTS), this.getBatchesForCreateProducts.bind(this))
+    this.router.get("/v1/batches/create-products", security.checkUserScope.bind(this, security.scope.READ_BATCHES), this.getBatchesForCreateProducts.bind(this))
     this.router.post("/v1/batches/create-products", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), upload.single("file"), this.uploadBatchFile.bind(this))
 
-    this.router.get("/v1/batches/delete-products", security.checkUserScope.bind(this, security.scope.READ_PRODUCTS), this.getBatchesForDeleteProducts.bind(this))
+    this.router.get("/v1/batches/delete-products", security.checkUserScope.bind(this, security.scope.READ_BATCHES), this.getBatchesForDeleteProducts.bind(this))
     this.router.post("/v1/batches/delete-products", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), upload.single("file"), this.uploadBatchDeleteFile.bind(this))
 
-    this.router.get("/v1/batches/:batchId", security.checkUserScope.bind(this, security.scope.READ_PRODUCTS), this.getBatchItem.bind(this))
+    this.router.get("/v1/batches/:batchId", security.checkUserScope.bind(this, security.scope.READ_BATCHES), this.getBatchItem.bind(this))
   }
 
   getErrorMessage(err) {
