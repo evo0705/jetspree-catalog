@@ -61,24 +61,22 @@ class ProductsRoute {
     }).catch(next)
   }
 
-  getSingleProduct(req, res, next) {
-    ProductsService.getSingleProduct(req.params.productId).then(data => {
-      if (data) {
-        res.send(data)
-      } else {
-        res.status(404).end()
-      }
-    }).catch(next)
+  async getSingleProduct(req, res, next) {
+    const product = await ProductsService.getSingleProduct(req.params.productId);
+    if (product) {
+      res.send(product)
+    } else {
+      res.status(404).end()
+    }
   }
 
-  getSingleProductBySlug(req, res, next) {
-    ProductsService.getSingleProductBySlug(req.params.slug).then(data => {
-      if (data) {
-        res.send(data)
-      } else {
-        res.status(404).end()
-      }
-    }).catch(next)
+  async getSingleProductBySlug(req, res, next) {
+    const product = await ProductsService.getSingleProductBySlug(req.params.slug);
+    if (product) {
+      res.send(product)
+    } else {
+      res.status(404).end()
+    }
   }
 
   addProduct(req, res, next) {
