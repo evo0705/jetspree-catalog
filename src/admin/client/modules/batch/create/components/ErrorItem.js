@@ -3,13 +3,13 @@ import {
   TableRow,
   TableRowColumn,
 } from "material-ui/Table"
-import style from "../style.css"
+import styles from "./ErrorItem.css"
 
 const ErrorItem = ({ error }) => {
-  return(
+  return (
     <TableRow>
-      <TableRowColumn style={{verticalAlign: "text-top", padding: "15px 24px"}}>Line #{error.row_no}</TableRowColumn>
-      <TableRowColumn style={{padding: "15px 24px", lineHeight: "20px"}}>
+      <TableRowColumn className={styles.lineNoColumn}>Line #{error.row_no}</TableRowColumn>
+      <TableRowColumn className={styles.errorFieldColumn}>
         {
           error.errors.map((columnError, index) => {
             return (

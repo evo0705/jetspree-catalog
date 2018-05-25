@@ -14,8 +14,14 @@ import LinearProgress from "material-ui/LinearProgress"
 import ErrorItem from "./components/ErrorItem"
 import { fetchBatchItem } from "../actions"
 import messages from "lib/text"
-import style from "./style.css"
+import styles from "./ViewCreateBatchesPage.css"
 import moment from "moment"
+
+const BatchDateTime = ({ batchDate }) => {
+  return (
+    batchDate ? moment(batchDate).format("MMMM Do YYYY h:mm:ss a") : "N/A"
+  )
+}
 
 class ViewCreateBatchesPage extends React.Component {
   constructor(props) {
@@ -36,7 +42,7 @@ class ViewCreateBatchesPage extends React.Component {
     const { batchItem } = this.props
 
     this.intervalId = setInterval(() => {
-      if(batchItem.status !== "aborted" || batchItem.status !== "completed") {
+      if (batchItem.status !== "aborted" || batchItem.status !== "completed") {
         this.props.fetchBatchItem()
       } else {
         clearInterval(this.intervalId)
@@ -47,25 +53,34 @@ class ViewCreateBatchesPage extends React.Component {
   render() {
     const { batchItem } = this.props
 
-    const LinearProgressIndicator = () => (
-      <LinearProgress mode='indeterminate'/>
-    );
+    let linearProgressIndicator
+    if (batchItem.status !== "aborted" || batchItem.status === "completed") {
+      linearProgressIndicator = <LinearProgress mode="indeterminate"/>
+    }
+
+    let errorTitleNode, errorsNode
+    if (batchItem.errors && batchItem.errors.length > 0) {
+      errorTitleNode = <TableRow className={styles.errorMessageRow}>
+        <TableRowColumn colSpan={2} className={styles.errorMessageColumn}>{'Error Messages'}</TableRowColumn>
+      </TableRow>
+      errorsNode = batchItem.errors.map(error => {
+        return (
+          <ErrorItem error={error}/>
+        )
+      })
+    }
 
     return (
-      <div className={style.batchDetailContainer}>
+      <div className={styles.batchDetailContainer}>
         <Subheader>Batch Upload Products</Subheader>
-          {
-            batchItem.status !== 'aborted' || batchItem.status === "completed" ?
-              <LinearProgressIndicator/>
-            : null
-          }
-        <Divider />
-        <Table style={{tableLayout: "auto"}}>
+        {linearProgressIndicator}
+        <Divider/>
+        <Table className={styles.batchDetailTable}>
           <TableBody displayRowCheckbox={false}>
             <TableRow>
               <TableRowColumn>{messages.batch_file_name}</TableRowColumn>
               <TableRowColumn>
-                <Link to={ batchItem.file_url ? batchItem.file_url : '#' } target="_blank">
+                <Link to={batchItem.file_url ? batchItem.file_url : "#"} target="_blank">
                   {batchItem.file_name}
                 </Link>
               </TableRowColumn>
@@ -81,49 +96,35 @@ class ViewCreateBatchesPage extends React.Component {
             <TableRow>
               <TableRowColumn>{messages.batch_uploaded_at}</TableRowColumn>
               <TableRowColumn>
-                { batchItem.date_uploaded ? moment(batchItem.date_uploaded).format('MMMM Do YYYY h:mm:ss a') : 'N/A' }
+                <BatchDateTime batchDate={batchItem.date_uploaded }/>
               </TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>{messages.batch_started_at}</TableRowColumn>
               <TableRowColumn>
-                { batchItem.date_started ? moment(batchItem.date_started).format('MMMM Do YYYY h:mm:ss a') : 'N/A' }
-            </TableRowColumn>
+                {batchItem.date_started ? moment(batchItem.date_started).format("MMMM Do YYYY h:mm:ss a") : "N/A"}
+              </TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>{messages.batch_parsed_at}</TableRowColumn>
               <TableRowColumn>
-                { batchItem.date_parsed ? moment(batchItem.date_parsed).format('MMMM Do YYYY h:mm:ss a') : 'N/A' }
+                {batchItem.date_parsed ? moment(batchItem.date_parsed).format("MMMM Do YYYY h:mm:ss a") : "N/A"}
               </TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>{messages.batch_stopped_at}</TableRowColumn>
               <TableRowColumn>
-                { batchItem.date_stopped ? moment(batchItem.date_stopped).format('MMMM Do YYYY h:mm:ss a') : 'N/A' }
+                {batchItem.date_stopped ? moment(batchItem.date_stopped).format("MMMM Do YYYY h:mm:ss a") : "N/A"}
               </TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>{messages.batch_completed_at}</TableRowColumn>
               <TableRowColumn>
-                { batchItem.date_completed ? moment(batchItem.date_completed).format('MMMM Do YYYY h:mm:ss a') : 'N/A' }
+                {batchItem.date_completed ? moment(batchItem.date_completed).format("MMMM Do YYYY h:mm:ss a") : "N/A"}
               </TableRowColumn>
             </TableRow>
-            {
-              batchItem.errors && batchItem.errors.length > 0 ?
-                <TableRow style={{borderWidth: 0}}>
-                  <TableRowColumn colSpan={2} style={{textAlign: "center"}}>Error Messages</TableRowColumn>
-                </TableRow>
-              : null
-            }
-            {
-              batchItem.errors && batchItem.errors.length > 0 ?
-                batchItem.errors.map(error => {
-                  return (
-                    <ErrorItem error = { error }/>
-                  )
-                })
-              : 'N/A'
-            }
+            {errorTitleNode}
+            {errorsNode}
           </TableBody>
         </Table>
       </div>

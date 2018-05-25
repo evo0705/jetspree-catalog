@@ -1,11 +1,11 @@
 import React from "react"
 import { connect } from "react-redux"
-import { withRouter, Redirect } from "react-router"
+import { withRouter } from "react-router"
 import { uploadBatchFile } from "../actions"
 import Uploader from "./components/Uploader"
-import style from "./style.css"
 import Divider from "material-ui/Divider/index"
 import Subheader from "material-ui/Subheader/index"
+import styles from "./NewCreateBatchesPage.css"
 
 class NewCreateBatchesPage extends React.Component {
   constructor(props) {
@@ -14,9 +14,15 @@ class NewCreateBatchesPage extends React.Component {
   }
 
   componentWillReceiveProps(props) {
-    if(props.batchItem._id) {
-      window.location = `/admin/create-batches/${props.batchItem._id}`
+    const { batchItem } = props
+    if (batchItem._id) {
+      this.navigateToBatchDetail(batchItem._id)
     }
+  }
+
+  navigateToBatchDetail(batchID) {
+    const { history } = this.props
+    history.push(`/admin/create-batches/${batchID}`)
   }
 
   onFileUpload(fileData) {
@@ -27,12 +33,12 @@ class NewCreateBatchesPage extends React.Component {
     const { uploading } = this.props
 
     return (
-      <div className={style.batchContainer}>
+      <div className={styles.newBatchContainer}>
         <Subheader>Upload New Products</Subheader>
-        <Divider />
-        <Uploader uploading={uploading} onUpload={this.onFileUpload} />
+        <Divider/>
+        <Uploader uploading={uploading} onUpload={this.onFileUpload}/>
       </div>
-  )
+    )
   }
 }
 
