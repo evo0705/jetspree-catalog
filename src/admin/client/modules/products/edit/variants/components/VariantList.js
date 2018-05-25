@@ -1,7 +1,7 @@
 import React from "react"
 import Paper from "material-ui/Paper"
-import FontIcon from 'material-ui/FontIcon';
-import IconButton from 'material-ui/IconButton';
+import FontIcon from "material-ui/FontIcon"
+import IconButton from "material-ui/IconButton"
 import messages from "lib/text"
 import styles from "./VariantList.css"
 
