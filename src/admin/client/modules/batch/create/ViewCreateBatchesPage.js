@@ -102,25 +102,25 @@ class ViewCreateBatchesPage extends React.Component {
             <TableRow>
               <TableRowColumn>{messages.batch_started_at}</TableRowColumn>
               <TableRowColumn>
-                {batchItem.date_started ? moment(batchItem.date_started).format("MMMM Do YYYY h:mm:ss a") : "N/A"}
+                <BatchDateTime batchDate={batchItem.date_started }/>
               </TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>{messages.batch_parsed_at}</TableRowColumn>
               <TableRowColumn>
-                {batchItem.date_parsed ? moment(batchItem.date_parsed).format("MMMM Do YYYY h:mm:ss a") : "N/A"}
+                <BatchDateTime batchDate={batchItem.date_parsed }/>
               </TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>{messages.batch_stopped_at}</TableRowColumn>
               <TableRowColumn>
-                {batchItem.date_stopped ? moment(batchItem.date_stopped).format("MMMM Do YYYY h:mm:ss a") : "N/A"}
+                <BatchDateTime batchDate={batchItem.date_stopped }/>
               </TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>{messages.batch_completed_at}</TableRowColumn>
               <TableRowColumn>
-                {batchItem.date_completed ? moment(batchItem.date_completed).format("MMMM Do YYYY h:mm:ss a") : "N/A"}
+                <BatchDateTime batchDate={batchItem.date_completed }/>
               </TableRowColumn>
             </TableRow>
             {errorTitleNode}
