@@ -11,8 +11,7 @@ const FileSystemService = require("./fileSystem")
 const CloudinaryService = require("./cloudinary")
 const AWS = require("aws-sdk")
 const uuid = require("uuid/v1")
-const ProductBatchUploadQueue = require("../../../../queue/ProductBatchUploadQueue")
-const ProductBatchDeleteQueue = require("../../../../queue/ProductBatchDeleteQueue")
+const { Queue, QUEUE_NAMES } = require("../../../../queue/Queue")
 
 const S3 = new AWS.S3({
   accessKeyId:     settings.bucketeerAWSAccessKeyId,
@@ -22,10 +21,6 @@ const S3 = new AWS.S3({
 
 class BatchUploadService {
   constructor() {
-    this.BATCH_ACTION = {
-      CREATE_PRODUCTS: "create_products",
-      DELETE_PRODUCTS: "delete_products",
-    }
     this.BATCH_STATUS = {
       QUEUED:    "queued",
       STARTED:   "started",
@@ -87,11 +82,11 @@ class BatchUploadService {
 
       // Publish message to queue
       switch (batchAction) {
-        case this.BATCH_ACTION.CREATE_PRODUCTS:
-          await ProductBatchUploadQueue.publish(inserted.insertedId.toString())
+        case QUEUE_NAMES.BULK_PRODUCT_UPLOAD:
+          await Queue.shared.publishMessageToQueue(QUEUE_NAMES.BULK_PRODUCT_UPLOAD, { batchID: inserted.insertedId.toString() })
           break
-        case this.BATCH_ACTION.DELETE_PRODUCTS:
-          await ProductBatchDeleteQueue.publish(inserted.insertedId.toString())
+        case QUEUE_NAMES.BULK_PRODUCT_DELETE:
+          await Queue.shared.publishMessageToQueue(QUEUE_NAMES.BULK_PRODUCT_DELETE, { batchID: inserted.insertedId.toString() })
           break
       }
 

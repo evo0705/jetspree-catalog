@@ -1,20 +1,14 @@
 const download = require("download")
-const Queue = require("./Queue")
+const { Queue, QUEUE_NAMES } = require("./Queue")
 const MessageResponse = require("./MessageResponse")
 const ProductsService = require("../api/server/services/products/products")
 const BatchUploadService = require("../api/server/services/products/batch")
 const ParseCSVString = require("../helpers/CSV").ParseCSVString
 const ObjectID = require("mongodb").ObjectID
 
-const BULK_PRODUCT_DELETE = "bulk_product_delete"
-
 class ProductBatchDeleteQueue {
-  static async publish(batchID) {
-    return Queue.shared.publishMessageToQueue(BULK_PRODUCT_DELETE, { batchID })
-  }
-
   static async process() {
-    return Queue.shared.consumeMessagesFromQueue(BULK_PRODUCT_DELETE, consume)
+    return Queue.shared.consumeMessagesFromQueue(QUEUE_NAMES.BULK_PRODUCT_DELETE, consume)
   }
 }
 

@@ -1,6 +1,5 @@
 "use strict"
-
-const Queue = require("../queue/Queue")
+const { Queue } = require("../queue/Queue")
 const ProductBatchUploadQueue = require("../queue/ProductBatchUploadQueue")
 const ProductBatchDeleteQueue = require("../queue/ProductBatchDeleteQueue")
 
