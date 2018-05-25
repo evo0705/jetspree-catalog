@@ -106,7 +106,7 @@ const ProductInventoryForm = ({ handleSubmit, pristine, reset, submitting, initi
                   <Field
                     name="country_hints"
                     component={CountrySelect}
-                    labelText={messages.products_country_hints}                                    
+                    labelText={messages.products_country_hints}
                   />
                 </div>
                 <div className="col-xs-6">

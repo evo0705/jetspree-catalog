@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { createVariant, updateVariant, setVariantOption, deleteVariant, createOption } from '../../actions'
-import ProductVariantsGrid from './components/grid'
+import VariantList from './components/VariantList'
 
 const mapStateToProps = (state, ownProps) => {
   const { productId } = ownProps.match.params;
@@ -58,4 +58,4 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ProductVariantsGrid));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(VariantList));

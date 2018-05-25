@@ -320,10 +320,20 @@ const fixProductData = (product) => {
   const saleFrom = moment(product.date_sale_from);
   const saleTo = moment(product.date_sale_to);
   const stockExpected = moment(product.date_stock_expected);
+  const country_hints = product.country_hints.map(country => country.code);
+  const productVariants = [];
+
+  product.variants.map(variant => {
+    if(variant.sku !== product.sku) {
+      productVariants.push(variant)
+    }
+  });
 
   product.date_sale_from = saleFrom.isValid() ? saleFrom.toDate() : null;
   product.date_sale_to = saleTo.isValid() ? saleTo.toDate() : null;
   product.date_stock_expected = stockExpected.isValid() ? stockExpected.toDate() : null;
+  product.country_hints = country_hints;
+  product.variants = productVariants;
 
   return product;
 }
