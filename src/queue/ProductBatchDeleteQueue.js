@@ -2,7 +2,7 @@ const download = require("download")
 const { Queue, QUEUE_NAMES } = require("./Queue")
 const MessageResponse = require("./MessageResponse")
 const ProductsService = require("../api/server/services/products/products")
-const BatchUploadService = require("../api/server/services/products/batch")
+const BatchUploadService = require("../api/server/services/batches")
 const ParseCSVString = require("../helpers/CSV").ParseCSVString
 const ObjectID = require("mongodb").ObjectID
 

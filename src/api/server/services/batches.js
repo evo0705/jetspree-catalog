@@ -1,17 +1,13 @@
 "use strict"
 
-const path = require("path")
 const url = require("url")
-const settings = require("../../lib/settings")
-const mongo = require("../../lib/mongo")
-const parse = require("../../lib/parse")
+const settings = require("../lib/settings")
+const mongo = require("../lib/mongo")
+const parse = require("../lib/parse")
 const ObjectID = require("mongodb").ObjectID
-const fse = require("fs-extra")
-const FileSystemService = require("./fileSystem")
-const CloudinaryService = require("./cloudinary")
 const AWS = require("aws-sdk")
 const uuid = require("uuid/v1")
-const { Queue, QUEUE_NAMES } = require("../../../../queue/Queue")
+const { Queue } = require("../../../queue/Queue")
 
 const S3 = new AWS.S3({
   accessKeyId:     settings.bucketeerAWSAccessKeyId,
@@ -34,13 +30,12 @@ class BatchUploadService {
     return { "error": true, "message": err.toString() }
   }
 
-  async getBatchList(req, res) {
-    try {
-      const batchList = await mongo.db.collection("batch").find().toArray()
-      res.status(200).send(batchList)
-    } catch (error) {
-      res.status(500).send(this.getErrorMessage(error))
+  async getBatchItemList(action = null) {
+    const filter = {}
+    if (action !== null) {
+      filter.action = action
     }
+    return await mongo.db.collection("batch").find(filter).toArray()
   }
 
   async getBatchItemByObjectID(batchObjectID) {
@@ -81,14 +76,7 @@ class BatchUploadService {
       const inserted = await mongo.db.collection("batch").insertOne(batchRecord)
 
       // Publish message to queue
-      switch (batchAction) {
-        case QUEUE_NAMES.BULK_PRODUCT_UPLOAD:
-          await Queue.shared.publishMessageToQueue(QUEUE_NAMES.BULK_PRODUCT_UPLOAD, { batchID: inserted.insertedId.toString() })
-          break
-        case QUEUE_NAMES.BULK_PRODUCT_DELETE:
-          await Queue.shared.publishMessageToQueue(QUEUE_NAMES.BULK_PRODUCT_DELETE, { batchID: inserted.insertedId.toString() })
-          break
-      }
+      await Queue.shared.publishMessageToQueue(batchAction, { batchID: inserted.insertedId.toString() })
 
       res.status(200).send(batchRecord)
     } catch (error) {
