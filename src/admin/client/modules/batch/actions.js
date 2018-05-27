@@ -52,7 +52,6 @@ function batchUploadEnd() {
 }
 
 export function fetchBatchList() {
-  console.log("fetchBatchList")
   return (dispatch, getState) => {
     dispatch(requestBatchList())
     return api.products.batch.list().then(({ status, json }) => {

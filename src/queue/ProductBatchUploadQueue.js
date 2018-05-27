@@ -74,16 +74,18 @@ async function consume(data) {
     const categoryList = await ProductCategoriesService.getCategoryByNames(categoryNames)
 
     // Validate the parsed data
-    for (let index = 0; index < parsedData.length; index++) {
-      const row = parsedData[index]
-      const rowErrors = await validateDataForInsert(row, parsedData, categoryList)
-      if (rowErrors.length > 0) {
-        validationErrors.push({
-          row_no: index + 1,
-          errors: rowErrors,
-        })
-      }
-    }
+    const allErrors = await Promise.all(parsedData.map((row) => validateDataForInsert(row, parsedData, categoryList)))
+    validationErrors = allErrors
+      .map((rowErrors, index) => {
+        if (rowErrors.length > 0) {
+          return {
+            row_no: index + 1,
+            errors: rowErrors,
+          }
+        }
+        return null
+      })
+      .filter(rowErrors => rowErrors !== null)
 
     // If validation has errors, save details into batch db and skip the insert
     if (validationErrors.length > 0) {
@@ -95,11 +97,14 @@ async function consume(data) {
       return new MessageResponse(`Validation failed: ${batchID}`, false, false)
     }
 
-    // Upload images to cloudinary
-    for (let index = 0; index < parsedData.length; index++) {
-      const imageUrls = parsedData[index]["Image URLs"].split("|")
-      parsedData[index]["Image URLs"] = await cloudinary.uploadImageURIs(imageUrls)
-    }
+    // Upload images to cloudinary asynchronously
+    const imageUploads = await Promise.all(parsedData.map(row => {
+      const imageUrls = row["Image URLs"].split("|")
+      return cloudinary.uploadImageURIs(imageUrls)
+    }))
+    parsedData.forEach((row, index) => {
+      row["Image URLs"] = imageUploads[index]
+    })
 
     // Parse data into a valid Products Document
     productsToInsert = getValidDocumentsForInsert(parsedData, categoryList)
@@ -300,24 +305,26 @@ function validateCountryHints(countryHints) {
 }
 
 async function validateImageURLs(imageURLs) {
-  const errors = []
-  for (let index = 0; index < imageURLs.length; index++) {
-    const imageURL = imageURLs[index]
-    try {
+  const errors = await Promise.all(imageURLs.map((imageURL, index) => {
+
       if (imageURL.substring(0, 4) !== "http") {
-        errors.push(`Image URL #${index + 1} is not a valid url.`)
-      } else {
-        // Get headers from imageURLs to check availability
-        const response = await rp({ method: "HEAD", uri: imageURL })
-        if (response["content-type"].substring(0, 5) !== "image") {
-          errors.push(`Image URL #${index + 1} is not an image.`)
-        }
+        return `Image URL #${index + 1} is not a valid url.`
       }
-    } catch (err) {
-      errors.push(`Unable to access Image Url #${index + 1}.`)
-    }
-  }
-  return errors
+
+      return rp({ method: "HEAD", uri: imageURL })
+        .then(response => {
+          if (response["content-type"].substring(0, 5) !== "image") {
+            return `Image URL #${index + 1} is not an image.`
+          }
+          return null
+        })
+        .catch((err) => {
+          return `Unable to access Image Url #${index + 1}.`
+        })
+
+    }),
+  )
+  return errors.filter(error => error !== null)
 }
 
 module.exports = ProductBatchUploadQueue
