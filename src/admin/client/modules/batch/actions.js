@@ -70,6 +70,7 @@ export function fetchBatchCreateProducts() {
   }
 }
 
+
 export function fetchBatchDeleteProducts() {
   return (dispatch, getState) => {
     dispatch(requestBatchList())

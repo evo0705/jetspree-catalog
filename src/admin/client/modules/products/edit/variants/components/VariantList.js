@@ -38,7 +38,7 @@ const ProductVariantsGrid = ({ settings, options, variants }) => {
         <div className={styles.gridHeadRow}>
           <div className={styles.gridCol}>{messages.products_sku}</div>
           <div className={styles.gridCol}>{messages.variantTitle}</div>
-          <div className={styles.gridCol}>{messages.actions}</div>
+          <div className={styles.gridActionCol}>{messages.actions}</div>
         </div>
         {variantRows}
       </div>
