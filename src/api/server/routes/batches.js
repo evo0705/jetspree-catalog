@@ -30,8 +30,9 @@ export default class BatchesRoute {
   }
 
   async getBatchesForCreateProducts(req, res) {
+    const query = req.query
     try {
-      const batchList = await BatchUploadService.getBatchItemList(BatchUploadService.BATCH_ACTION.CREATE_PRODUCTS)
+      const batchList = await BatchUploadService.getBatchItemList(BatchUploadService.BATCH_ACTION.CREATE_PRODUCTS, query)
       res.status(200).send(batchList)
     } catch (error) {
       res.status(500).send(this.getErrorMessage(error))

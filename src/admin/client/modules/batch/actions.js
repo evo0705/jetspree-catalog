@@ -54,14 +54,14 @@ function batchUploadEnd(batchUploadItem) {
 
 function batchUploadError() {
   return {
-  }
     type: t.PRODUCT_BATCH_UPLOAD_ERROR,
+  }
 }
 
-export function fetchBatchCreateProducts() {
+export function fetchBatchCreateProducts(query) {
   return (dispatch, getState) => {
     dispatch(requestBatchList())
-    return api.batches.createProducts.list().then(({ status, json }) => {
+    return api.batches.createProducts.list(query).then(({ status, json }) => {
       dispatch(receiveBatchList(json))
     })
       .catch(error => {
@@ -69,6 +69,7 @@ export function fetchBatchCreateProducts() {
       })
   }
 }
+
 
 export function fetchBatchDeleteProducts() {
   return (dispatch, getState) => {

@@ -12,7 +12,7 @@ import Subheader from "material-ui/Subheader"
 import Divider from "material-ui/Divider"
 import LinearProgress from "material-ui/LinearProgress"
 import ErrorItem from "./components/ErrorItem"
-import { fetchBatchItem } from "../actions"
+import { fetchBatchByID } from "../actions"
 import messages from "lib/text"
 import styles from "./ViewCreateBatchesPage.css"
 import moment from "moment"
@@ -144,7 +144,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     fetchBatchItem: () => {
       const { batchId } = ownProps.match.params
-      dispatch(fetchBatchItem(batchId))
+      dispatch(fetchBatchByID(batchId))
     },
   }
 }

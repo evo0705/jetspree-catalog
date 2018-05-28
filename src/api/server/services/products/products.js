@@ -368,7 +368,7 @@ class ProductsService {
     project.category_id = 1
     project.slug = 1
     project.is_deleted = 1
-
+    project.product_id = 1
     return project
   }
 
@@ -559,17 +559,27 @@ class ProductsService {
     return matchQuery
   }
 
-  getSingleProduct(id) {
+  async getSingleProduct(id) {
     if (!ObjectID.isValid(id)) {
       return Promise.reject("Invalid identifier")
     }
-    return this.getProducts({ ids: id, limit: 1 })
-      .then(products => products.data.length > 0 ? products.data[0] : {})
+    const productResponse = await this.getProducts({ ids: id, limit: 1 });
+    const product = productResponse.data.length > 0 ? productResponse.data[0] : {};
+
+    if(product.product_id !== null) {
+      product.variants = await this.getProductVariants(product.product_id);
+    }
+    return product;
   }
 
-  getSingleProductBySlug(slug) {
-    return this.getProducts({ slug, limit: 1 })
-      .then(products => products.data.length > 0 ? products.data[0] : {})
+  async getSingleProductBySlug(slug) {
+    const productResponse = this.getProducts({ slug, limit: 1 })
+    const product = productResponse.data.length > 0 ? productResponse.data[0] : {};
+
+    if(product.product_id !== null) {
+      product.variants = await this.getProductVariants(product.product_id);
+    }
+    return product;
   }
 
   addProduct(data) {
@@ -979,6 +989,21 @@ class ProductsService {
     }
   }
 
+  async getProductVariants(productId) {
+    const variantResponse = await this.getProducts({ product_id: productId });
+    const variantList = variantResponse.data.length > 0 ? variantResponse.data : [];
+
+    const variants = variantList.map(variant => {
+      return {
+        sku:            variant.sku,
+        name:           variant.name,
+        _id:             variant.id,
+        slug:           variant.slug,
+      }
+    });
+
+    return variants;
+  }
 }
 
 module.exports = new ProductsService()

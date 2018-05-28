@@ -32,12 +32,19 @@ class BatchUploadService {
     return { "error": true, "message": err.toString() }
   }
 
-  async getBatchItemList(action = null) {
+  async getBatchItemList(action = null, query = {}) {
     const filter = {}
+    const sortBy = {}
+
     if (action !== null) {
       filter.action = action
     }
-    return await mongo.db.collection("batch").find(filter).toArray()
+
+    if(query.sortField !== undefined && query.sortType !== undefined) {
+      sortBy[query.sortField] = Number(query.sortType)
+    }
+
+    return await mongo.db.collection("batch").find(filter).sort(sortBy).toArray()
   }
 
   async getBatchItemByObjectID(batchObjectID) {
