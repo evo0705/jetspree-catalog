@@ -13,6 +13,7 @@ const ProductOptionValuesService = require("../services/products/optionValues")
 const ProductVariantsService = require("../services/products/variants")
 const ProductImagesService = require("../services/products/images")
 const BatchUploadService = require("../services/products/batch")
+const { QUEUE_NAMES } = require("../../../queue/Queue")
 
 class ProductsRoute {
   constructor(router) {
@@ -283,11 +284,11 @@ class ProductsRoute {
   }
 
   async uploadBatchFile(req, res, next) {
-    await BatchUploadService.uploadFile(req, res, BatchUploadService.BATCH_ACTION.CREATE_PRODUCTS)
+    await BatchUploadService.uploadFile(req, res, QUEUE_NAMES.BULK_PRODUCT_UPLOAD)
   }
 
   async uploadBatchDeleteFile(req, res, next) {
-    await BatchUploadService.uploadFile(req, res, BatchUploadService.BATCH_ACTION.DELETE_PRODUCTS)
+    await BatchUploadService.uploadFile(req, res, QUEUE_NAMES.BULK_PRODUCT_DELETE)
   }
 }
 

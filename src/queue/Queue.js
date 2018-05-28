@@ -8,6 +8,11 @@ if (RABBITMQ_BIGWIG_URL === RABBITMQ_UNSET && MODE === "production") {
   process.exit()
 }
 
+const QUEUE_NAMES = {
+  BULK_PRODUCT_DELETE: "bulk_product_delete",
+  BULK_PRODUCT_UPLOAD: "bulk_product_upload",
+}
+
 let sharedInstance
 
 class Queue {
@@ -97,4 +102,7 @@ class Queue {
 
 }
 
-module.exports = Queue
+module.exports = {
+  Queue,
+  QUEUE_NAMES,
+}

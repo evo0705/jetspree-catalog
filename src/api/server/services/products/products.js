@@ -252,6 +252,7 @@ class ProductsService {
         related_product_ids: 1,
         enabled:             1,
         discontinued:        1,
+        is_deleted:          1,
         date_created:        1,
         date_updated:        1,
         cost_price:          costPrice,
@@ -366,6 +367,7 @@ class ProductsService {
     project.id = "$_id"
     project.category_id = 1
     project.slug = 1
+    project.is_deleted = 1
 
     return project
   }
@@ -433,7 +435,9 @@ class ProductsService {
     tags = parse.getString(tags)
     slug = parse.getString(slug)
 
-    let queries = []
+    let queries = [{
+      is_deleted: false,
+    }]
     const currentDate = new Date()
 
     if (category_id !== null) {
@@ -607,13 +611,8 @@ class ProductsService {
       })
   }
 
-  async deleteProductsByObjectIDArray(productObjectIDArray) {
-    productObjectIDArray.forEach(productObjectID => {
-      if (!ObjectID.isValid(productObjectID)) {
-        return Promise.reject("Invalid identifier")
-      }
-    })
-    const updated = await mongo.db.collection("products").updateMany({ "_id": { $in: productObjectIDArray } }, { $set: { is_deleted: true } })
+  async deleteProductsBySKU(productSKUArray) {
+    const updated = await mongo.db.collection("products").updateMany({ sku: { $in: productSKUArray } }, { $set: { is_deleted: true } })
     return updated.matchedCount
   }
 
@@ -663,6 +662,7 @@ class ProductsService {
     product.stock_backorder = parse.getBooleanIfValid(data.stock_backorder, false)
     product.category_id = parse.getObjectIDIfValid(data.category_id)
     product.category_ids = parse.getArrayOfObjectID(data.category_ids)
+    product.is_deleted = parse.getBooleanIfValid(data.is_deleted, false)
 
     if (data.dimensions) {
       product.dimensions = data.dimensions
