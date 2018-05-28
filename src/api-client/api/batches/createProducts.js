@@ -3,8 +3,8 @@ class BatchCreateProducts{
     this.client = client;
   }
 
-  list() {
-    return this.client.get(`/batches/create-products`);
+  list(query) {
+    return this.client.get(`/batches/create-products`, query);
   }
 
   upload(formData) {

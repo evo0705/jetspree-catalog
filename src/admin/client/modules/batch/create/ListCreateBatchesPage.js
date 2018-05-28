@@ -7,7 +7,7 @@ import Divider from "material-ui/Divider"
 import DropDownMenu from "material-ui/DropDownMenu"
 import MenuItem from "material-ui/MenuItem"
 import BatchListItem from "./components/BatchListItem"
-import { fetchBatchList } from "../actions"
+import { fetchBatchCreateProducts } from "../actions"
 import messages from "lib/text"
 import styles from "./ListCreateBatchesPage.css"
 
@@ -102,7 +102,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     fetchBatchList: (query) => {
-      dispatch(fetchBatchList(query))
+      dispatch(fetchBatchCreateProducts(query))
     },
   }
 }
