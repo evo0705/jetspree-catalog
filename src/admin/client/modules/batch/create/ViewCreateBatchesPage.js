@@ -17,12 +17,6 @@ import messages from "lib/text"
 import styles from "./ViewCreateBatchesPage.css"
 import moment from "moment"
 
-const BatchDateTime = ({ batchDate }) => {
-  return (
-    batchDate ? moment(batchDate).format("MMMM Do YYYY h:mm:ss a") : "N/A"
-  )
-}
-
 class ViewCreateBatchesPage extends React.Component {
   constructor(props) {
     super(props)
@@ -37,12 +31,19 @@ class ViewCreateBatchesPage extends React.Component {
     clearInterval(this.intervalId)
   }
 
+  batchDateTime(batchDate) {
+    if(!batchDate) {
+      return "N/A"
+    }
+    return moment(batchDate).format("MMMM Do YYYY h:mm:ss a")
+  }
+
   pollBatchItem() {
     const FIVE_SECONDS = 5000
     const { batchItem } = this.props
 
     this.intervalId = setInterval(() => {
-      if (batchItem.status !== "aborted" || batchItem.status !== "completed") {
+      if (batchItem.status !== "aborted" && batchItem.status !== "completed") {
         this.props.fetchBatchItem()
       } else {
         clearInterval(this.intervalId)
@@ -54,7 +55,7 @@ class ViewCreateBatchesPage extends React.Component {
     const { batchItem } = this.props
 
     let linearProgressIndicator
-    if (batchItem.status !== "aborted" || batchItem.status === "completed") {
+    if (batchItem.status !== "aborted" && batchItem.status !== "completed") {
       linearProgressIndicator = <LinearProgress mode="indeterminate"/>
     }
 
@@ -96,31 +97,31 @@ class ViewCreateBatchesPage extends React.Component {
             <TableRow>
               <TableRowColumn>{messages.batch_uploaded_at}</TableRowColumn>
               <TableRowColumn>
-                <BatchDateTime batchDate={batchItem.date_uploaded }/>
+                {this.batchDateTime(batchItem.date_uploaded)}
               </TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>{messages.batch_started_at}</TableRowColumn>
               <TableRowColumn>
-                <BatchDateTime batchDate={batchItem.date_started }/>
+                {this.batchDateTime(batchItem.date_started)}
               </TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>{messages.batch_parsed_at}</TableRowColumn>
               <TableRowColumn>
-                <BatchDateTime batchDate={batchItem.date_parsed }/>
+                {this.batchDateTime(batchItem.date_parsed)}
               </TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>{messages.batch_stopped_at}</TableRowColumn>
               <TableRowColumn>
-                <BatchDateTime batchDate={batchItem.date_stopped }/>
+                {this.batchDateTime(batchItem.date_stopped)}
               </TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>{messages.batch_completed_at}</TableRowColumn>
               <TableRowColumn>
-                <BatchDateTime batchDate={batchItem.date_completed }/>
+                {this.batchDateTime(batchItem.date_completed)}
               </TableRowColumn>
             </TableRow>
             {errorTitleNode}

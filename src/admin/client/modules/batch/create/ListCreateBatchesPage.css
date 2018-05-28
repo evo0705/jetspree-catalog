@@ -3,5 +3,5 @@
   margin-top: 15px;
 }
 .batchListHeaderColumn {
-  text-align: center;
+  text-align: center!important;
 }
