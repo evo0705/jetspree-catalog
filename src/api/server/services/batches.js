@@ -1,13 +1,11 @@
 "use strict"
 
-const url = require("url")
 const settings = require("../lib/settings")
 const mongo = require("../lib/mongo")
-const parse = require("../lib/parse")
-const ObjectID = require("mongodb").ObjectID
 const AWS = require("aws-sdk")
 const uuid = require("uuid/v1")
-const { Queue } = require("../../../queue/Queue")
+const ProductBatchUploadQueue = require("../../../queue/ProductBatchUploadQueue")
+const ProductBatchDeleteQueue = require("../../../queue/ProductBatchDeleteQueue")
 
 const S3 = new AWS.S3({
   accessKeyId:     settings.bucketeerAWSAccessKeyId,
@@ -17,6 +15,10 @@ const S3 = new AWS.S3({
 
 class BatchUploadService {
   constructor() {
+    this.BATCH_ACTION = {
+      CREATE_PRODUCTS: "create_products",
+      DELETE_PRODUCTS: "delete_products",
+    }
     this.BATCH_STATUS = {
       QUEUED:    "queued",
       STARTED:   "started",
@@ -76,7 +78,14 @@ class BatchUploadService {
       const inserted = await mongo.db.collection("batch").insertOne(batchRecord)
 
       // Publish message to queue
-      await Queue.shared.publishMessageToQueue(batchAction, { batchID: inserted.insertedId.toString() })
+      switch (batchAction){
+        case this.BATCH_ACTION.CREATE_PRODUCTS:
+          await ProductBatchUploadQueue.publish(inserted.insertedId.toString())
+          break
+        case this.BATCH_ACTION.DELETE_PRODUCTS:
+          await ProductBatchDeleteQueue.publish(inserted.insertedId.toString())
+          break
+      }
 
       res.status(200).send(batchRecord)
     } catch (error) {

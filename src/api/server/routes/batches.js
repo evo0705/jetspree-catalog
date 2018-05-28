@@ -6,7 +6,6 @@ const upload = multer({ storage: storage })
 
 const security = require("../lib/security")
 const BatchUploadService = require("../services/batches")
-const { QUEUE_NAMES } = require("../../../queue/Queue")
 const ObjectID = require("mongodb").ObjectID
 
 class BatchesRoute {
@@ -31,7 +30,7 @@ class BatchesRoute {
 
   async getBatchesForCreateProducts(req, res) {
     try {
-      const batchList = await BatchUploadService.getBatchItemList(QUEUE_NAMES.BULK_PRODUCT_UPLOAD)
+      const batchList = await BatchUploadService.getBatchItemList(BatchUploadService.BATCH_ACTION.CREATE_PRODUCTS)
       res.status(200).send(batchList)
     } catch (error) {
       res.status(500).send(this.getErrorMessage(error))
@@ -40,7 +39,7 @@ class BatchesRoute {
 
   async getBatchesForDeleteProducts(req, res) {
     try {
-      const batchList = await BatchUploadService.getBatchItemList(QUEUE_NAMES.BULK_PRODUCT_DELETE)
+      const batchList = await BatchUploadService.getBatchItemList(BatchUploadService.BATCH_ACTION.DELETE_PRODUCTS)
       res.status(200).send(batchList)
     } catch (error) {
       res.status(500).send(this.getErrorMessage(error))
@@ -71,11 +70,11 @@ class BatchesRoute {
   }
 
   async uploadBatchFile(req, res, next) {
-    await BatchUploadService.uploadFile(req, res, QUEUE_NAMES.BULK_PRODUCT_UPLOAD)
+    await BatchUploadService.uploadFile(req, res, BatchUploadService.BATCH_ACTION.CREATE_PRODUCTS)
   }
 
   async uploadBatchDeleteFile(req, res, next) {
-    await BatchUploadService.uploadFile(req, res, QUEUE_NAMES.BULK_PRODUCT_DELETE)
+    await BatchUploadService.uploadFile(req, res, BatchUploadService.BATCH_ACTION.DELETE_PRODUCTS)
   }
 }
 
