@@ -12,8 +12,6 @@ const ProductOptionsService = require("../services/products/options")
 const ProductOptionValuesService = require("../services/products/optionValues")
 const ProductVariantsService = require("../services/products/variants")
 const ProductImagesService = require("../services/products/images")
-const BatchUploadService = require("../services/products/batch")
-const { QUEUE_NAMES } = require("../../../queue/Queue")
 
 class ProductsRoute {
   constructor(router) {
@@ -53,11 +51,6 @@ class ProductsRoute {
     this.router.put("/v1/products/:productId/variants/:variantId", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.updateVariant.bind(this))
     this.router.delete("/v1/products/:productId/variants/:variantId", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.deleteVariant.bind(this))
     this.router.put("/v1/products/:productId/variants/:variantId/options", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.setVariantOption.bind(this))
-
-    this.router.get("/v1/products/batch/list", security.checkUserScope.bind(this, security.scope.READ_PRODUCTS), this.getBatchList.bind(this))
-    this.router.get("/v1/products/batch/:batchId", security.checkUserScope.bind(this, security.scope.READ_PRODUCTS), this.getBatchItem.bind(this))
-    this.router.post("/v1/products/batch", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), upload.single("file"), this.uploadBatchFile.bind(this))
-    this.router.post("/v1/products/batch/delete", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), upload.single("file"), this.uploadBatchDeleteFile.bind(this))
 
     this.router.get("/v1/products_by_slug/:slug", security.checkUserScope.bind(this, security.scope.READ_PRODUCTS), this.getSingleProductBySlug.bind(this))
   }
@@ -254,41 +247,6 @@ class ProductsRoute {
     } else {
       next()
     }
-  }
-
-  async getBatchList(req, res, next) {
-    await BatchUploadService.getBatchList(req, res, next)
-  }
-
-  async getBatchItem(req, res, next) {
-    const { batchId } = req.params
-
-    let batchObjectID
-    try {
-      batchObjectID = new ObjectID(batchId)
-    } catch (err) {
-      return res.status(422).json("Invalid identifier")
-    }
-
-    try {
-      const batchItem = await BatchUploadService.getBatchItemByObjectID(batchObjectID)
-
-      if (batchItem === null) {
-        return res.status(404)
-      }
-
-      res.json(batchItem)
-    } catch (err) {
-      res.status(500).json(err)
-    }
-  }
-
-  async uploadBatchFile(req, res, next) {
-    await BatchUploadService.uploadFile(req, res, QUEUE_NAMES.BULK_PRODUCT_UPLOAD)
-  }
-
-  async uploadBatchDeleteFile(req, res, next) {
-    await BatchUploadService.uploadFile(req, res, QUEUE_NAMES.BULK_PRODUCT_DELETE)
   }
 }
 

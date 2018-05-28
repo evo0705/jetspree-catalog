@@ -15,7 +15,7 @@ const dashboardWebSocket = require("./lib/dashboardWebSocket")
 const ajaxRouter = require("./ajaxRouter")
 const apiRouter = require("./apiRouter")
 const cors = require("cors")
-const { Queue } = require("../../queue/Queue")
+const Queue = require("../../queue/Queue")
 
 security.applyMiddleware(app)
 app.set("trust proxy", 1)

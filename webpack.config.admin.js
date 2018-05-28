@@ -49,7 +49,8 @@ module.exports = {
       modules: path.resolve(__dirname, 'src/admin/client/modules'),
       lib: path.resolve(__dirname, 'src/admin/client/lib'),
       ApiClient: path.resolve(__dirname, 'src/api-client')
-    }
+    },
+    extensions: [".js", ".json", ".jsx"]
   },
 
   module: {
