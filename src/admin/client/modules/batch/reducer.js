@@ -6,6 +6,7 @@ const initialState = {
   fetchingBatchItem:  false,
   batchItem:          {},
   uploadingBatchFile: false,
+  batchUploadItem: {}
 }
 
 export default (state = initialState, action) => {
@@ -40,11 +41,16 @@ export default (state = initialState, action) => {
       })
     case t.PRODUCT_BATCH_UPLOAD_START:
       return Object.assign({}, state, {
-        uploadingBatchFile: true,
+        uploadingBatchFile: true
       })
     case t.PRODUCT_BATCH_UPLOAD_END:
       return Object.assign({}, state, {
         uploadingBatchFile: false,
+        batchUploadItem: action.batchUploadItem,
+      })
+    case t.PRODUCT_BATCH_UPLOAD_ERROR:
+      return Object.assign({}, state, {
+        uploadingBatchFile: false
       })
     default:
       return state

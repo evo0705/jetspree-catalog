@@ -1,11 +1,9 @@
 import React from "react"
-import TextField from "material-ui/TextField"
-import Dialog from "material-ui/Dialog"
-import FlatButton from "material-ui/FlatButton"
 import Dropzone from "react-dropzone"
 import Snackbar from "material-ui/Snackbar"
 import RaisedButton from "material-ui/RaisedButton"
 import messages from "lib/text"
+import styles from "./Uploader.css"
 
 export default class Uploader extends React.Component {
   onDrop = files => {
@@ -20,19 +18,25 @@ export default class Uploader extends React.Component {
   }
 
   render() {
-    const { uploading = false, fileName } = this.props
+    const { uploading = false } = this.props
 
     return (
-      <div>
+      <div className={styles.uploadContainer}>
         <Dropzone
+          className={styles.fileUpload}
           onDrop={this.onDrop}
           multiple={false}
           disableClick={true}
           accept="text/csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-          ref={(node) => { this.dropzone = node; }}>
-          {fileName}
+          ref={(node) => {
+            this.dropzone = node
+          }}>
+          {"Drop CSV FIle"}
         </Dropzone>
-        <RaisedButton primary={true} label={messages.chooseImage} disabled={uploading} style={{ marginLeft:20, marginTop:10 }} onClick={() => { this.dropzone.open() }} />
+        <RaisedButton primary={true} label={messages.chooseImage} disabled={uploading} style={{ marginTop: 10 }}
+                      onClick={() => {
+                        this.dropzone.open()
+                      }}/>
         <Snackbar
           open={uploading}
           message={messages.messages_uploading}
