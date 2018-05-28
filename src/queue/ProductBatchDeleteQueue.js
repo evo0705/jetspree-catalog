@@ -1,14 +1,14 @@
-const download = require("download")
-const Queue = require("./Queue")
-const MessageResponse = require("./MessageResponse")
-const ProductsService = require("../api/server/services/products/products")
-const BatchUploadService = require("../api/server/services/batches")
-const ParseCSVString = require("../helpers/CSV").ParseCSVString
-const ObjectID = require("mongodb").ObjectID
+import download from "download"
+import Queue from "./Queue"
+import MessageResponse from "./MessageResponse"
+import ProductsService from "../api/server/services/products/products"
+import BatchUploadService from "../api/server/services/batches"
+import { ParseCSVString } from "../helpers/CSV"
+import { ObjectID } from "mongodb"
 
 const BULK_PRODUCT_DELETE = "bulk_product_delete"
 
-class ProductBatchDeleteQueue {
+export default class ProductBatchDeleteQueue {
   static async publish(batchID) {
     return Queue.shared.publishMessageToQueue(BULK_PRODUCT_DELETE, { batchID })
   }
@@ -97,5 +97,3 @@ async function consume(data) {
   // Return success
   return new MessageResponse(`Deleted ${totalCount} products`, true)
 }
-
-module.exports = ProductBatchDeleteQueue

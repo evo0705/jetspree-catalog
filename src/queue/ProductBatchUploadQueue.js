@@ -1,20 +1,20 @@
-const download = require("download")
-const Queue = require("./Queue")
-const MessageResponse = require("./MessageResponse")
-const ProductsService = require("../api/server/services/products/products")
-const ProductCategoriesService = require("../api/server/services/products/productCategories")
-const BatchUploadService = require("../api/server/services/batches")
-const ParseCSVString = require("../helpers/CSV").ParseCSVString
-const ObjectID = require("mongodb").ObjectID
-const rp = require("request-promise")
-const countries = require("../api/server/lib/countries")
-const cloudinary = require("../api/server/services/products/cloudinary")
-const _ = require("lodash")
-const parse = require("../api/server/lib/parse")
+import download from "download"
+import Queue from"./Queue"
+import MessageResponse from"./MessageResponse"
+import ProductsService from"../api/server/services/products/products"
+import ProductCategoriesService from"../api/server/services/products/productCategories"
+import BatchUploadService from"../api/server/services/batches"
+import { ParseCSVString } from"../helpers/CSV"
+import { ObjectID } from"mongodb"
+import rp from"request-promise"
+import countries from"../api/server/lib/countries"
+import cloudinary from"../api/server/services/products/cloudinary"
+import _ from"lodash"
+import parse from"../api/server/lib/parse"
 
 const BULK_PRODUCT_UPLOAD = "bulk_product_upload"
 
-class ProductBatchUploadQueue {
+export default class ProductBatchUploadQueue {
   static async publish(batchID) {
     return Queue.shared.publishMessageToQueue(BULK_PRODUCT_UPLOAD, { batchID })
   }
@@ -319,5 +319,3 @@ async function validateImageURLs(imageURLs) {
   }
   return errors
 }
-
-module.exports = ProductBatchUploadQueue

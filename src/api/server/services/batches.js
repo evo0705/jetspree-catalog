@@ -1,11 +1,11 @@
 "use strict"
 
-const settings = require("../lib/settings")
-const mongo = require("../lib/mongo")
-const AWS = require("aws-sdk")
-const uuid = require("uuid/v1")
-const ProductBatchUploadQueue = require("../../../queue/ProductBatchUploadQueue")
-const ProductBatchDeleteQueue = require("../../../queue/ProductBatchDeleteQueue")
+import settings from"../lib/settings"
+import mongo from"../lib/mongo"
+import AWS from"aws-sdk"
+import uuid from"uuid/v1"
+import ProductBatchUploadQueue from "../../../queue/ProductBatchUploadQueue"
+import ProductBatchDeleteQueue from "../../../queue/ProductBatchDeleteQueue"
 
 const S3 = new AWS.S3({
   accessKeyId:     settings.bucketeerAWSAccessKeyId,

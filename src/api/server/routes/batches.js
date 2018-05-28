@@ -1,14 +1,15 @@
 "use strict"
 
-const multer = require("multer")
+import multer from "multer"
+
 const storage = multer.memoryStorage()
 const upload = multer({ storage: storage })
 
-const security = require("../lib/security")
-const BatchUploadService = require("../services/batches")
-const ObjectID = require("mongodb").ObjectID
+import security from "../lib/security"
+import BatchUploadService from "../services/batches"
+import { ObjectID } from "mongodb"
 
-class BatchesRoute {
+export default class BatchesRoute {
   constructor(router) {
     this.router = router
     this.registerRoutes()
@@ -77,5 +78,3 @@ class BatchesRoute {
     await BatchUploadService.uploadFile(req, res, BatchUploadService.BATCH_ACTION.DELETE_PRODUCTS)
   }
 }
-
-module.exports = BatchesRoute

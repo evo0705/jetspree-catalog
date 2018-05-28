@@ -1,8 +1,8 @@
 "use strict"
 
-const Queue = require("../queue/Queue")
-const ProductBatchUploadQueue = require("../queue/ProductBatchUploadQueue")
-const ProductBatchDeleteQueue = require("../queue/ProductBatchDeleteQueue")
+import Queue from "../queue/Queue"
+import ProductBatchUploadQueue from "../queue/ProductBatchUploadQueue"
+import ProductBatchDeleteQueue from "../queue/ProductBatchDeleteQueue"
 
 serve().catch()
 
