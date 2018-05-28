@@ -49,9 +49,9 @@ class ListCreateBatchesPage extends React.Component {
     const { sortBy } = this.state
     const { batchList } = this.props
 
-    const rows = batchList.map((item, index) => {
+    const rows = batchList.map(item => {
       return (
-        <BatchListItem key={`batch-item-${index}`} batchItem={item}/>
+        <BatchListItem key={item._id} batchItem={item}/>
       )
     })
 
