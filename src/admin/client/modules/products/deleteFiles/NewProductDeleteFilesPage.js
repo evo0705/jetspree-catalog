@@ -24,7 +24,7 @@ class NewProductDeleteFilesPage extends React.Component {
 
   navigateToBatchDetail(batchID) {
     const { history } = this.props
-    history.push(`/admin/create-batches/${batchID}`)
+    history.push(`/admin/products/delete-files/${batchID}`)
   }
 
   onUploadDeleteProductsFile(fileData) {

@@ -29,7 +29,7 @@ class BatchListItem extends React.Component {
     return (
       <TableRow>
         <TableRowColumn>
-          <Link to={`/admin/create-batches/${batchItem._id}`}>
+          <Link to={`/admin/products/delete-files/${batchItem._id}`}>
             {batchItem.file_name}
           </Link>
         </TableRowColumn>
