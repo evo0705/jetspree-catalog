@@ -16,7 +16,6 @@ class NewProductDeleteFilesPage extends React.Component {
 
   componentWillReceiveProps(props) {
     const { batchItem } = props
-    console.log(props)
     if (batchItem._id) {
       this.navigateToBatchDetail(batchItem._id)
     }
