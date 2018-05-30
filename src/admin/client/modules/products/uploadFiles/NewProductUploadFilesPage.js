@@ -24,7 +24,7 @@ class NewProductUploadFilesPage extends React.Component {
 
   navigateToBatchDetail(batchID) {
     const { history } = this.props
-    history.push(`/admin/create-batches/${batchID}`)
+    history.push(`/admin/products/upload-files/${batchID}`)
   }
 
   onUploadCreateProductsFile(fileData) {
