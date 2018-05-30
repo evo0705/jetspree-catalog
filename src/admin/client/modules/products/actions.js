@@ -205,6 +205,63 @@ const getFilter = (state, offset = 0) => {
   return filter;
 }
 
+function requestBatchList() {
+  return {
+    type: t.REQUEST_BATCH_LIST,
+  }
+}
+
+function receiveBatchList(batchList) {
+  return {
+    type: t.RECEIVE_BATCH_LIST,
+    batchList,
+  }
+}
+
+function receiveBatchListError() {
+  return {
+    type: t.RECEIVE_BATCH_LIST_ERROR,
+  }
+}
+
+function requestBatchItem() {
+  return {
+    type: t.REQUEST_BATCH_ITEM,
+  }
+}
+
+function receiveBatchItem(batchItem) {
+  return {
+    type: t.RECEIVE_BATCH_ITEM,
+    batchItem,
+  }
+}
+
+function receiveBatchItemError() {
+  return {
+    type: t.RECEIVE_BATCH_ITEM_ERROR,
+  }
+}
+
+function batchUploadStart() {
+  return {
+    type: t.PRODUCT_BATCH_UPLOAD_START,
+  }
+}
+
+function batchUploadEnd(batchUploadItem) {
+  return {
+    type: t.PRODUCT_BATCH_UPLOAD_END,
+    batchUploadItem,
+  }
+}
+
+function batchUploadError() {
+  return {
+    type: t.PRODUCT_BATCH_UPLOAD_ERROR,
+  }
+}
+
 export function fetchProducts() {
   return (dispatch, getState) => {
     const state = getState();
@@ -520,5 +577,81 @@ export function uploadImages(productId, form) {
     .catch(error => {
       dispatch(imagesUploadEnd());
     });
+  }
+}
+
+export function fetchProductUploadFiles() {
+  return (dispatch, getState) => {
+    dispatch(requestBatchList())
+    return api.products.uploadFiles.list().then(({ status, json }) => {
+      dispatch(receiveBatchList(json))
+    })
+      .catch(error => {
+        dispatch(receiveBatchListError(error))
+      })
+  }
+}
+
+export function fetchProductUploadFileByID(batchId) {
+  return (dispatch, getState) => {
+    dispatch(requestBatchItem())
+    return api.products.uploadFiles.retrieve(batchId).then(({ status, json }) => {
+      dispatch(receiveBatchItem(json))
+    })
+      .catch(error => {
+        dispatch(receiveBatchItemError(error))
+      })
+  }
+}
+
+export function uploadCreateProductsFile(formData) {
+  return (dispatch, getState) => {
+    dispatch(batchUploadStart())
+
+    return api.products.uploadFiles.upload(formData)
+      .then(({ status, json }) => {
+        dispatch(batchUploadEnd(json))
+      })
+      .catch(error => {
+        dispatch(batchUploadError())
+      })
+  }
+}
+
+export function fetchProductDeleteFiles() {
+  return (dispatch, getState) => {
+    dispatch(requestBatchList())
+    return api.products.deleteFiles.list().then(({ status, json }) => {
+      dispatch(receiveBatchList(json))
+    })
+      .catch(error => {
+        dispatch(receiveBatchListError(error))
+      })
+  }
+}
+
+export function fetchProductDeleteFileByID(batchId) {
+  return (dispatch, getState) => {
+    dispatch(requestBatchItem())
+    return api.products.deleteFiles.retrieve(batchId).then(({ status, json }) => {
+      dispatch(receiveBatchItem(json))
+    })
+      .catch(error => {
+        dispatch(receiveBatchItemError(error))
+      })
+  }
+}
+
+export function uploadDeleteProductsFile(formData) {
+  return (dispatch, getState) => {
+    dispatch(batchUploadStart())
+
+    return api.products.deleteFiles.upload(formData)
+      .then(({ status, json }) => {
+        dispatch(batchUploadEnd(json))
+      })
+      .catch(error => {
+        dispatch(batchUploadError())
+      })
   }
 }

@@ -1,0 +1,8 @@
+.lineNoColumn {
+  verticalAlign: text-top;
+  padding: 15px 24px;
+}
+.errorFieldColumn {
+  padding: 15px 24px;
+  lineHeight: 20px;
+}
