@@ -21,17 +21,9 @@ const initialState = {
     search:       "",
     enabled:      null,
     discontinued: false,
-    onSale: null,
-    stockStatus: null
+    onSale:       null,
+    stockStatus:  null,
   },
-
-  fetchingBatchList:  false,
-  batchList:          [],
-  fetchingBatchItem:  false,
-  batchItem:          {},
-  uploadingBatchFile: false,
-  batchUploadItem: {}
-};
 
   fetchingBatchList:  false,
   batchList:          [],
