@@ -8,7 +8,8 @@ import CustomersHead from 'modules/customers/listHead/index'
 import CustomerHead from 'modules/customers/editHead/index'
 import ProductsHead from 'modules/products/listHead/index'
 import ProductHead from 'modules/products/editHead/index'
-import BatchListHeaderButtons from 'modules/batch/create/header/BatchListHeaderButtons'
+import BatchListHeaderButtons from 'modules/products/uploadFiles/header/BatchListHeaderButtons'
+import ProductDeleteFilesHeaderButtons from 'modules/products/deleteFiles/header/ProductDeleteFilesHeaderButtons'
 import OrdersHead from 'modules/orders/listHead/index'
 import OrderHead from 'modules/orders/editHead/index'
 import OrderStatusHead from 'modules/orderStatuses/head/index'
@@ -107,18 +108,31 @@ export default class AppBarTop extends React.Component {
       leftButton = <Link to="/admin/products"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
       rightElements = <ProductCategoryHead />
     }
-    else if(pathname === '/admin/create-batches'){
-      title = messages.batch_process_title;
+    else if(pathname === '/admin/products/upload-files'){
+      title = messages.batch_create_products;
       leftButton = <Link to="/admin/products"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
       rightElements = <BatchListHeaderButtons />
     }
-    else if(pathname === '/admin/create-batches/new'){
-      title = messages.batch_create_title;
-      leftButton = <Link to="/admin/create-batches"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
+    else if(pathname === '/admin/products/upload-files/new'){
+      title = messages.batch_create_products;
+      leftButton = <Link to="/admin/products/upload-files"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
     }
-    else if(pathname.startsWith('/admin/create-batches/')){
+    else if(pathname.startsWith('/admin/products/upload-files/')){
       title = messages.batch_view_title;
-      leftButton = <Link to="/admin/create-batches"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
+      leftButton = <Link to="/admin/products/upload-files"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
+    }
+    else if(pathname === '/admin/products/delete-files'){
+      title = messages.batch_delete_products;
+      leftButton = <Link to="/admin/products"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
+      rightElements = <ProductDeleteFilesHeaderButtons />
+    }
+    else if(pathname === '/admin/products/delete-files/new'){
+      title = messages.batch_delete_products;
+      leftButton = <Link to="/admin/products/delete-files"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
+    }
+    else if(pathname.startsWith('/admin/products/delete-files/')){
+      title = messages.batch_view_title;
+      leftButton = <Link to="/admin/products/delete-files"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
     }
     else if(pathname === '/admin/customers'){
       title = messages.customers_title;
@@ -197,7 +211,7 @@ export default class AppBarTop extends React.Component {
     }
     else if(pathname === '/admin/settings/payments/add'){
       title = messages.settings_addPaymentMethod;
-      leftButton = <Link to="/admin/settings/payments"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
+      leftButton = <Link to="/admin/settings/payments"><IconButton><FontIcn color="#fff" className="material-icons">arrow_back</FontIcn></IconButton></Link>
     }
     else if(pathname.startsWith('/admin/settings/shipping/')){
       title = messages.settings_editShippingMethod;

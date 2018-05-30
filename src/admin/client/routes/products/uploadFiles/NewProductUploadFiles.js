@@ -1,15 +1,15 @@
 import React from 'react'
 import { Route } from 'react-router-dom'
-import ViewCreateBatchesPage from 'modules/batch/create/ViewCreateBatchesPage'
+import NewProductUploadFilesPage from 'modules/products/uploadFiles/NewProductUploadFilesPage'
 
-const ViewCreateBatches = (props) => {
+const NewProductUploadFiles = (props) => {
   return (
     <div className="row row--no-gutter col-full-height scroll">
       <div className="col-xs-12 col-sm-12 col-md-10 col-lg-8 col-md-offset-1 col-lg-offset-2">
-        <ViewCreateBatchesPage />
+        <NewProductUploadFilesPage />
       </div>
     </div>
   )
 }
 
-export default ViewCreateBatches;
+export default NewProductUploadFiles;

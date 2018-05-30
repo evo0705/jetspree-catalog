@@ -7,9 +7,10 @@ import Divider from "material-ui/Divider"
 import DropDownMenu from "material-ui/DropDownMenu"
 import MenuItem from "material-ui/MenuItem"
 import BatchListItem from "./components/BatchListItem"
-import { fetchBatchCreateProducts } from "../actions"
+import { fetchProductDeleteFiles } from "../actions"
 import messages from "lib/text"
-import styles from "./ListCreateBatchesPage.css"
+import styles from "./ListProductDeleteFilesPage.css"
+import products from "../reducer"
 
 const sortByMenuList = [
   { label: "Date Uploaded (DESC)", value: "date_uploaded_desc", field: "date_uploaded", sortType: -1 },
@@ -18,7 +19,7 @@ const sortByMenuList = [
   { label: "Status (ASC)", value: "status_asc", field: "status", sortType: 1 },
 ]
 
-class ListCreateBatchesPage extends React.Component {
+class ListProductDeleteFilesPage extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -64,7 +65,7 @@ class ListCreateBatchesPage extends React.Component {
     return (
       <div className={styles.batchList}>
         <Subheader>
-          {messages.batch_process_title}
+          {messages.batch_delete_products}
           <DropDownMenu value={sortBy} onChange={this.onSortChange}>
             {sortByMenu}
           </DropDownMenu>
@@ -94,17 +95,17 @@ class ListCreateBatchesPage extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    fetching:  state.batches.fetchingBatchList,
-    batchList: state.batches.batchList,
+    fetching:  state.products.fetchingBatchList,
+    batchList: state.products.batchList,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    fetchBatchList: (query) => {
-      dispatch(fetchBatchCreateProducts(query))
+    fetchBatchList: () => {
+      dispatch(fetchProductDeleteFiles())
     },
   }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ListCreateBatchesPage))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ListProductDeleteFilesPage))

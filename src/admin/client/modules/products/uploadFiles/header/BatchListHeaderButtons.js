@@ -28,7 +28,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     onCreate: () => {
-      ownProps.history.push("/admin/create-batches/new")
+      ownProps.history.push("/admin/products/upload-files/new")
     },
   }
 }

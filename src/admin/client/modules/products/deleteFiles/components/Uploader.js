@@ -31,7 +31,7 @@ export default class Uploader extends React.Component {
           ref={(node) => {
             this.dropzone = node
           }}>
-          {"Drop CSV FIle"}
+          {"Drop CSV File"}
         </Dropzone>
         <RaisedButton primary={true} label={messages.chooseImage} disabled={uploading} style={{ marginTop: 10 }}
                       onClick={() => {

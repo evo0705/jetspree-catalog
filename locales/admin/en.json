@@ -338,7 +338,7 @@
   "batch_process": "Batch Process",
   "batch_process_title": "Batch Process List",
   "batch_create_products": "Batch Create Products",
-  "batch_create_title": "Batch Create Products",
+  "batch_delete_products": "Batch Delete Products",
   "batch_view_title": "Batch Process Item",
   "batch_file_name": "File Name",
   "batch_file_size": "File Size",
