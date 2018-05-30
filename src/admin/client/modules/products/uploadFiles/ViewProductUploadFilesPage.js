@@ -144,8 +144,8 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     fetchProductUploadFileByID: () => {
-      const { batchId } = ownProps.match.params
-      dispatch(fetchProductUploadFileByID(batchId))
+      const { id } = ownProps.match.params
+      dispatch(fetchProductUploadFileByID(id))
     },
   }
 }

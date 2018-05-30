@@ -144,8 +144,8 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     fetchProductDeleteFileByID: () => {
-      const { batchId } = ownProps.match.params
-      dispatch(fetchProductDeleteFileByID(batchId))
+      const { id } = ownProps.match.params
+      dispatch(fetchProductDeleteFileByID(id))
     },
   }
 }
