@@ -4,19 +4,15 @@ class ProductUploadFiles{
   }
 
   list(query) {
-    return this.client.get(`/batch-files`, query);
+    return this.client.get(`/batches/create-products`, query);
   }
 
   retrieve(batchId) {
-    return this.client.get(`/batch-files/${batchId}`);
+    return this.client.get(`/batches/${batchId}`);
   }
 
-  uploadCreateProductsFile(formData) {
-    return this.client.postFormData(`/batch-files/create-products`, formData);
-  }
-
-  uploadDeleteProductsFile(formData) {
-    return this.client.postFormData(`/batch-files/delete-products`, formData);
+  upload(formData) {
+    return this.client.postFormData(`/batches/create-products`, formData);
   }
 }
 
