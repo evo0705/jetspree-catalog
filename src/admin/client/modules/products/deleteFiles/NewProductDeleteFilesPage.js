@@ -1,20 +1,22 @@
 import React from "react"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
-import { uploadBatchFile } from "../actions"
+import { uploadDeleteProductsFile } from "../actions"
 import Uploader from "./components/Uploader"
 import Divider from "material-ui/Divider/index"
 import Subheader from "material-ui/Subheader/index"
-import styles from "./NewCreateBatchesPage.css"
+import styles from "./NewProductDeleteFilesPage.css"
+import products from "../reducer"
 
-class NewCreateBatchesPage extends React.Component {
+class NewProductDeleteFilesPage extends React.Component {
   constructor(props) {
     super(props)
-    this.onFileUpload = this.onFileUpload.bind(this)
+    this.onUploadDeleteProductsFile = this.onUploadDeleteProductsFile.bind(this)
   }
 
   componentWillReceiveProps(props) {
     const { batchItem } = props
+    console.log(props)
     if (batchItem._id) {
       this.navigateToBatchDetail(batchItem._id)
     }
@@ -25,8 +27,8 @@ class NewCreateBatchesPage extends React.Component {
     history.push(`/admin/create-batches/${batchID}`)
   }
 
-  onFileUpload(fileData) {
-    this.props.onUploadFile(fileData)
+  onUploadDeleteProductsFile(fileData) {
+    this.props.onUploadDeleteProductsFile(fileData)
   }
 
   render() {
@@ -34,9 +36,9 @@ class NewCreateBatchesPage extends React.Component {
 
     return (
       <div className={styles.newBatchContainer}>
-        <Subheader>Upload New Products</Subheader>
+        <Subheader>Upload CSV Files</Subheader>
         <Divider/>
-        <Uploader uploading={uploading} onUpload={this.onFileUpload}/>
+        <Uploader uploading={uploading} buttonLabel="Delete Products" onUpload={this.onUploadDeleteProductsFile}/>
       </div>
     )
   }
@@ -44,17 +46,17 @@ class NewCreateBatchesPage extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    uploading: state.batches.uploadingBatchFile,
-    batchItem: state.batches.batchUploadItem,
+    uploading: state.products.uploadingBatchFile,
+    batchItem: state.products.batchUploadItem,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    onUploadFile: (formData) => {
-      dispatch(uploadBatchFile(formData))
+    onUploadDeleteProductsFile: (formData) => {
+      dispatch(uploadDeleteProductsFile(formData))
     },
   }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(NewCreateBatchesPage))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(NewProductDeleteFilesPage))

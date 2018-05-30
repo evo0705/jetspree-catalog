@@ -1,36 +1,49 @@
-import React from 'react'
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
+import React from "react"
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 
-import Head from 'modules/head'
-import Login from 'routes/login'
-import Logout from 'routes/logout'
-import Home from 'routes/home'
-import NotFound from 'routes/notFound'
-import Products from 'routes/products'
-import ProductDetails from 'routes/products/edit'
-import ListCreateBatches from 'routes/batch/create/ListCreateBatches'
-import NewCreateBatches from 'routes/batch/create/NewCreateBatches'
-import ViewCreateBatches from 'routes/batch/create/ViewCreateBatches'
-import ProductCategories from 'routes/products/categories'
-import Customers from 'routes/customers'
-import CustomerDetails from 'routes/customers/edit'
-import CustomerGroups from 'routes/customers/groups'
-import Orders from 'routes/orders'
-import OrderDetails from 'routes/orders/edit'
-import OrderStatuses from 'routes/orders/statuses'
-import Pages from 'routes/pages'
-import PagesDetails from 'routes/pages/edit'
-import Settings from 'routes/settings'
-import Apps from 'routes/apps'
-import Files from 'routes/files'
+import Head from "modules/head"
+import Login from "routes/login"
+import Logout from "routes/logout"
+import Home from "routes/home"
+import NotFound from "routes/notFound"
+import Products from "routes/products"
+import ProductDetails from "routes/products/edit"
+import ListProductUploadFiles from "routes/products/uploadFiles/ListProductUploadFiles"
+import NewProductUploadFiles from "routes/products/uploadFiles/NewProductUploadFiles"
+import ViewProductUploadFiles from "routes/products/uploadFiles/ViewProductUploadFiles"
+import ListProductDeleteFiles from "routes/products/deleteFiles/ListProductDeleteFiles"
+import NewProductDeleteFiles from "routes/products/deleteFiles/NewProductDeleteFiles"
+import ViewProductDeleteFiles from "routes/products/deleteFiles/ViewProductDeleteFiles"
+import ProductCategories from "routes/products/categories"
+import Customers from "routes/customers"
+import CustomerDetails from "routes/customers/edit"
+import CustomerGroups from "routes/customers/groups"
+import Orders from "routes/orders"
+import OrderDetails from "routes/orders/edit"
+import OrderStatuses from "routes/orders/statuses"
+import Pages from "routes/pages"
+import PagesDetails from "routes/pages/edit"
+import Settings from "routes/settings"
+import Apps from "routes/apps"
+import Files from "routes/files"
 
-import {blue700, cyan700, pinkA200, grey100, grey300, grey400, white, darkBlack, fullBlack} from 'material-ui/styles/colors';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import {
+  blue700,
+  cyan700,
+  pinkA200,
+  grey100,
+  grey300,
+  grey400,
+  white,
+  darkBlack,
+  fullBlack,
+} from "material-ui/styles/colors"
+import MuiThemeProvider from "material-ui/styles/MuiThemeProvider"
+import getMuiTheme from "material-ui/styles/getMuiTheme"
 
 const muiTheme = getMuiTheme({
-  fontFamily: 'Roboto, sans-serif',
-  palette: {
+  fontFamily: "Roboto, sans-serif",
+  palette:    {
     primary1Color: blue700,
     primary2Color: cyan700,
     primary3Color: grey400,
@@ -42,24 +55,30 @@ const muiTheme = getMuiTheme({
     canvasColor: white,
     borderColor: grey300,
     pickerHeaderColor: blue700,
-    shadowColor: fullBlack
+    shadowColor: fullBlack,
   },
-  appBar: {}
-});
+  appBar:     {},
+})
 
 export default () => (
   <Router>
     <MuiThemeProvider muiTheme={muiTheme}>
       <div id="container">
         <div id="headContainer">
-          <Head />
+          <Head/>
         </div>
         <div id="bodyContainer">
           <Switch>
             <Route path="/admin/" exact component={Home}/>
-            <Route path="/admin/login" component={Login} />
-            <Route path="/admin/logout" component={Logout} />
+            <Route path="/admin/login" component={Login}/>
+            <Route path="/admin/logout" component={Logout}/>
             <Route path="/admin/products" exact component={Products}/>
+            <Route path="/admin/products/upload-files" exact component={ListProductUploadFiles}/>
+            <Route path="/admin/products/upload-files/new" component={NewProductUploadFiles}/>
+            <Route path="/admin/products/upload-files/:id" component={ViewProductUploadFiles}/>
+            <Route path="/admin/products/delete-files" exact component={ListProductDeleteFiles}/>
+            <Route path="/admin/products/delete-files/new" component={NewProductDeleteFiles}/>
+            <Route path="/admin/products/delete-files/:id" component={ViewProductDeleteFiles}/>
             <Route path="/admin/products/categories" exact component={ProductCategories}/>
             <Route path="/admin/orders" exact component={Orders}/>
             <Route path="/admin/orders/statuses" exact component={OrderStatuses}/>
@@ -68,9 +87,6 @@ export default () => (
             <Route path="/admin/customers/groups" exact component={CustomerGroups}/>
             <Route path="/admin/customer/:customerId" exact component={CustomerDetails}/>
             <Route path="/admin/product/:productId" component={ProductDetails}/>
-            <Route path="/admin/create-batches" exact component={ListCreateBatches}/>
-            <Route path="/admin/create-batches/new" component={NewCreateBatches}/>
-            <Route path="/admin/create-batches/:batchId" component={ViewCreateBatches}/>
             <Route path="/admin/pages" exact component={Pages}/>
             <Route path="/admin/pages/add" exact component={PagesDetails}/>
             <Route path="/admin/pages/:pageId" component={PagesDetails}/>

@@ -12,18 +12,19 @@ import Subheader from "material-ui/Subheader"
 import Divider from "material-ui/Divider"
 import LinearProgress from "material-ui/LinearProgress"
 import ErrorItem from "./components/ErrorItem"
-import { fetchBatchByID } from "../actions"
+import { fetchProductUploadFileByID } from "../actions"
 import messages from "lib/text"
-import styles from "./ViewCreateBatchesPage.css"
+import styles from "./ViewProductDeleteFilesPage.css"
 import moment from "moment"
+import products from "../reducer"
 
-class ViewCreateBatchesPage extends React.Component {
+class ViewProductDeleteFilesPage extends React.Component {
   constructor(props) {
     super(props)
   }
 
   componentDidMount() {
-    this.props.fetchBatchItem()
+    this.props.fetchProductUploadFileByID()
     this.pollBatchItem()
   }
 
@@ -44,7 +45,7 @@ class ViewCreateBatchesPage extends React.Component {
 
     this.intervalId = setInterval(() => {
       if (batchItem.status !== "aborted" && batchItem.status !== "completed") {
-        this.props.fetchBatchItem()
+        this.props.fetchProductUploadFileByID()
       } else {
         clearInterval(this.intervalId)
       }
@@ -135,18 +136,18 @@ class ViewCreateBatchesPage extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    fetching:  state.batches.fetchingBatchItem,
-    batchItem: state.batches.batchItem,
+    fetching:  state.products.fetchingBatchItem,
+    batchItem: state.products.batchItem,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    fetchBatchItem: () => {
+    fetchProductUploadFileByID: () => {
       const { batchId } = ownProps.match.params
-      dispatch(fetchBatchByID(batchId))
+      dispatch(fetchProductUploadFileByID(batchId))
     },
   }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ViewCreateBatchesPage))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ViewProductDeleteFilesPage))
