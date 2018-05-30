@@ -573,7 +573,7 @@ class ProductsService {
   }
 
   async getSingleProductBySlug(slug) {
-    const productResponse = this.getProducts({ slug, limit: 1 })
+    const productResponse = await this.getProducts({ slug, limit: 1 })
     const product = productResponse.data.length > 0 ? productResponse.data[0] : {};
 
     if(product.product_id !== null) {
