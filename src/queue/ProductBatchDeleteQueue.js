@@ -2,11 +2,11 @@ import download from "download"
 import Queue from "./Queue"
 import MessageResponse from "./MessageResponse"
 import ProductsService from "../api/server/services/products/products"
-import BatchUploadService from "../api/server/services/batches"
+import BatchUploadService, { BATCH_STATUS } from "../api/server/services/batches"
 import { ParseCSVString } from "../helpers/CSV"
 import { ObjectID } from "mongodb"
 
-const BULK_PRODUCT_DELETE = "bulk_product_delete"
+export const BULK_PRODUCT_DELETE = "bulk_product_delete"
 
 export default class ProductBatchDeleteQueue {
   static async publish(batchID) {
@@ -38,21 +38,21 @@ async function consume(data) {
     if (batchItem === null) {
       await BatchUploadService.update(batchItem._id, {
         date_aborted: new Date,
-        status:       BatchUploadService.BATCH_STATUS.ABORTED,
+        status:       BATCH_STATUS.ABORTED,
       })
       return new MessageResponse(`Couldn't fetch batch with ID: ${batchID}`, false, false)
     }
 
     await BatchUploadService.update(batchItem._id, {
       date_started: new Date,
-      status:       BatchUploadService.BATCH_STATUS.STARTED,
+      status:       BATCH_STATUS.STARTED,
     })
 
     fileBuffer = await download(batchItem.file_url)
   } catch (err) {
     await BatchUploadService.update(batchObjectID, {
       date_aborted: new Date,
-      status:       BatchUploadService.BATCH_STATUS.ABORTED,
+      status:       BATCH_STATUS.ABORTED,
     })
     return new MessageResponse(`Couldn't fetch file: ${err}`, false, true)
   }
@@ -65,14 +65,14 @@ async function consume(data) {
 
     await BatchUploadService.update(batchItem._id, {
       date_parsed: new Date,
-      status:      BatchUploadService.BATCH_STATUS.PARSED,
+      status:      BATCH_STATUS.PARSED,
     })
 
     productSKUArray = parsedData.map(row => row["SKU"])
   } catch (err) {
     await BatchUploadService.update(batchItem._id, {
       date_aborted: new Date,
-      status:       BatchUploadService.BATCH_STATUS.ABORTED,
+      status:       BATCH_STATUS.ABORTED,
     })
     return new MessageResponse(`Couldn't read file: ${err}`, false, false)
   }
@@ -84,14 +84,14 @@ async function consume(data) {
   } catch (err) {
     await BatchUploadService.update(batchItem._id, {
       date_aborted: new Date,
-      status:       BatchUploadService.BATCH_STATUS.ABORTED,
+      status:       BATCH_STATUS.ABORTED,
     })
     return new MessageResponse(`Couldn't delete products: ${err}`, false, true)
   }
 
   await BatchUploadService.update(batchItem._id, {
     date_completed: new Date,
-    status:         BatchUploadService.BATCH_STATUS.COMPLETED,
+    status:         BATCH_STATUS.COMPLETED,
   })
 
   // Return success

@@ -1,18 +1,18 @@
 import download from "download"
-import Queue from"./Queue"
-import MessageResponse from"./MessageResponse"
-import ProductsService from"../api/server/services/products/products"
-import ProductCategoriesService from"../api/server/services/products/productCategories"
-import BatchUploadService from "../api/server/services/batches"
-import { ParseCSVString } from"../helpers/CSV"
-import { ObjectID } from"mongodb"
-import rp from"request-promise"
-import countries from"../api/server/lib/countries"
-import cloudinary from"../api/server/services/products/cloudinary"
-import _ from"lodash"
-import parse from"../api/server/lib/parse"
+import Queue from "./Queue"
+import MessageResponse from "./MessageResponse"
+import ProductsService from "../api/server/services/products/products"
+import ProductCategoriesService from "../api/server/services/products/productCategories"
+import BatchUploadService, { BATCH_STATUS } from "../api/server/services/batches"
+import { ParseCSVString } from "../helpers/CSV"
+import { ObjectID } from "mongodb"
+import rp from "request-promise"
+import countries from "../api/server/lib/countries"
+import cloudinary from "../api/server/services/products/cloudinary"
+import _ from "lodash"
+import parse from "../api/server/lib/parse"
 
-const BULK_PRODUCT_UPLOAD = "bulk_product_upload"
+export const BULK_PRODUCT_UPLOAD = "bulk_product_upload"
 
 export default class ProductBatchUploadQueue {
   static async publish(batchID) {
@@ -44,21 +44,21 @@ async function consume(data) {
     if (batchItem === null) {
       await BatchUploadService.update(batchItem._id, {
         date_aborted: new Date,
-        status:       BatchUploadService.BATCH_STATUS.ABORTED,
+        status:       BATCH_STATUS.ABORTED,
       })
       return new MessageResponse(`Couldn't fetch batch with ID: ${batchID}`, false, false)
     }
 
     await BatchUploadService.update(batchItem._id, {
       date_started: new Date,
-      status:       BatchUploadService.BATCH_STATUS.STARTED,
+      status:       BATCH_STATUS.STARTED,
     })
 
     fileBuffer = await download(batchItem.file_url)
   } catch (err) {
     await BatchUploadService.update(batchItem._id, {
       date_aborted: new Date,
-      status:       BatchUploadService.BATCH_STATUS.ABORTED,
+      status:       BATCH_STATUS.ABORTED,
     })
     return new MessageResponse(`Couldn't fetch file: ${err}`, false, true)
   }
@@ -91,7 +91,7 @@ async function consume(data) {
     if (validationErrors.length > 0) {
       await BatchUploadService.update(batchItem._id, {
         date_aborted: new Date,
-        status:       BatchUploadService.BATCH_STATUS.ABORTED,
+        status:       BATCH_STATUS.ABORTED,
         errors:       validationErrors,
       })
       return new MessageResponse(`Validation failed: ${batchID}`, false, false)
@@ -111,7 +111,7 @@ async function consume(data) {
 
     await BatchUploadService.update(batchItem._id, {
       date_parsed: new Date(),
-      status:      BatchUploadService.BATCH_STATUS.PARSED,
+      status:      BATCH_STATUS.PARSED,
       data:        { products: productsToInsert },
     })
   } catch (err) {
@@ -127,14 +127,14 @@ async function consume(data) {
   } catch (err) {
     await BatchUploadService.update(batchItem._id, {
       date_aborted: new Date,
-      status:       BatchUploadService.BATCH_STATUS.ABORTED,
+      status:       BATCH_STATUS.ABORTED,
     })
     return new MessageResponse(`Error while creating products: ${err}`, false, true)
   }
 
   await BatchUploadService.update(batchItem._id, {
     date_completed: new Date,
-    status:         BatchUploadService.BATCH_STATUS.COMPLETED,
+    status:         BATCH_STATUS.COMPLETED,
   })
 
   // Return success

@@ -13,26 +13,26 @@ const S3 = new AWS.S3({
   region:          settings.bucketeerAWSRegion,
 })
 
-class BatchUploadService {
-  constructor() {
-    this.BATCH_ACTION = {
-      CREATE_PRODUCTS: "create_products",
-      DELETE_PRODUCTS: "delete_products",
-    }
-    this.BATCH_STATUS = {
-      QUEUED:    "queued",
-      STARTED:   "started",
-      PARSED:    "parsed",
-      ABORTED:   "aborted",
-      COMPLETED: "completed",
-    }
-  }
+export const BATCH_ACTION = {
+  CREATE_PRODUCTS: "create_products",
+  DELETE_PRODUCTS: "delete_products",
+}
+
+export const BATCH_STATUS = {
+  QUEUED:    "queued",
+  STARTED:   "started",
+  PARSED:    "parsed",
+  ABORTED:   "aborted",
+  COMPLETED: "completed",
+}
+
+export default class BatchUploadService {
 
   getErrorMessage(err) {
     return { "error": true, "message": err.toString() }
   }
 
-  async getBatchItemList(action = null, query = {}) {
+  static async getBatchItemList(action = null, query = {}) {
     const filter = {}
     const sortBy = {}
 
@@ -47,11 +47,11 @@ class BatchUploadService {
     return await mongo.db.collection("batch").find(filter).sort(sortBy).toArray()
   }
 
-  async getBatchItemByObjectID(batchObjectID) {
+  static async getBatchItemByObjectID(batchObjectID) {
     return await mongo.db.collection("batch").findOne({ _id: batchObjectID })
   }
 
-  async uploadFile(req, res, batchAction) {
+  static async uploadFile(req, res, batchAction) {
 
     const fileBuffer = req.file.buffer
     const fileName = req.file.originalname
@@ -73,7 +73,7 @@ class BatchUploadService {
         file_key:       fileKey,
         file_size:      fileSize,
         file_url:       uploadedFile.Location,
-        status:         this.BATCH_STATUS.QUEUED,
+        status:         BATCH_STATUS.QUEUED,
         action:         batchAction,
         errors:         [],
         date_started:   null,
@@ -86,10 +86,10 @@ class BatchUploadService {
 
       // Publish message to queue
       switch (batchAction){
-        case this.BATCH_ACTION.CREATE_PRODUCTS:
+        case BATCH_ACTION.CREATE_PRODUCTS:
           await ProductBatchUploadQueue.publish(inserted.insertedId.toString())
           break
-        case this.BATCH_ACTION.DELETE_PRODUCTS:
+        case BATCH_ACTION.DELETE_PRODUCTS:
           await ProductBatchDeleteQueue.publish(inserted.insertedId.toString())
           break
       }
@@ -100,7 +100,7 @@ class BatchUploadService {
     }
   }
 
-  async update(batchObjectID, data) {
+  static async update(batchObjectID, data) {
     try {
       await mongo.db.collection("batch").updateOne({ _id: batchObjectID }, { $set: data })
     } catch (err) {
@@ -109,5 +109,3 @@ class BatchUploadService {
   }
 
 }
-
-module.exports = new BatchUploadService()
