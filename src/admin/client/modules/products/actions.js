@@ -580,10 +580,10 @@ export function uploadImages(productId, form) {
   }
 }
 
-export function fetchProductUploadFiles() {
+export function fetchProductUploadFiles(query) {
   return (dispatch, getState) => {
     dispatch(requestBatchList())
-    return api.products.uploadFiles.list().then(({ status, json }) => {
+    return api.products.uploadFiles.list(query).then(({ status, json }) => {
       dispatch(receiveBatchList(json))
     })
       .catch(error => {
@@ -618,10 +618,10 @@ export function uploadCreateProductsFile(formData) {
   }
 }
 
-export function fetchProductDeleteFiles() {
+export function fetchProductDeleteFiles(query) {
   return (dispatch, getState) => {
     dispatch(requestBatchList())
-    return api.products.deleteFiles.list().then(({ status, json }) => {
+    return api.products.deleteFiles.list(query).then(({ status, json }) => {
       dispatch(receiveBatchList(json))
     })
       .catch(error => {
@@ -655,3 +655,43 @@ export function uploadDeleteProductsFile(formData) {
       })
   }
 }
+
+export function fetchProductUpdateFiles(query) {
+  return (dispatch, getState) => {
+    dispatch(requestBatchList())
+    return api.products.updateFiles.list(query).then(({ status, json }) => {
+      dispatch(receiveBatchList(json))
+    })
+      .catch(error => {
+        dispatch(receiveBatchListError(error))
+      })
+  }
+}
+
+export function fetchProductUpdateFileByID(batchId) {
+  return (dispatch, getState) => {
+    dispatch(requestBatchItem())
+    return api.products.updateFiles.retrieve(batchId).then(({ status, json }) => {
+      dispatch(receiveBatchItem(json))
+    })
+      .catch(error => {
+        dispatch(receiveBatchItemError(error))
+      })
+  }
+}
+
+export function uploadUpdateProductsFile(formData) {
+  return (dispatch, getState) => {
+    dispatch(batchUploadStart())
+
+    return api.products.updateFiles.upload(formData)
+      .then(({ status, json }) => {
+        dispatch(batchUploadEnd(json))
+      })
+      .catch(error => {
+        dispatch(batchUploadError())
+      })
+  }
+}
+
+

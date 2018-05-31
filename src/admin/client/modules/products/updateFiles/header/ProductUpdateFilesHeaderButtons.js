@@ -7,13 +7,13 @@ import IconButton from "material-ui/IconButton"
 
 const Fragment = React.Fragment
 
-class ProductDeleteFilesHeaderButtons extends React.Component {
+class ProductUpdateFilesHeaderButtons extends React.Component {
   render() {
     const { onCreate } = this.props
 
     return (
       <Fragment>
-        <IconButton touch={true} tooltipPosition="bottom-left" tooltip={messages.batchCreateProducts} onClick={onCreate}>
+        <IconButton touch={true} tooltipPosition="bottom-left" onClick={onCreate}>
           <FontIcon color="#fff" className="material-icons">create_new_folder</FontIcon>
         </IconButton>
       </Fragment>
@@ -28,9 +28,9 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     onCreate: () => {
-      ownProps.history.push("/admin/products/delete-files/new")
+      ownProps.history.push("/admin/products/update-files/new")
     },
   }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ProductDeleteFilesHeaderButtons))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ProductUpdateFilesHeaderButtons))

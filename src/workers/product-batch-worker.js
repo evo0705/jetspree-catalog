@@ -3,6 +3,7 @@
 import Queue from "../queue/Queue"
 import ProductBatchUploadQueue from "../queue/ProductBatchUploadQueue"
 import ProductBatchDeleteQueue from "../queue/ProductBatchDeleteQueue"
+import ProductBatchUpdateQueue from "../queue/ProductBatchUpdateQueue"
 
 serve().catch()
 
@@ -18,6 +19,7 @@ async function serve() {
     await Promise.all([
       ProductBatchDeleteQueue.process(),
       ProductBatchUploadQueue.process(),
+      ProductBatchUpdateQueue.process(),
     ])
     console.log("All workers started successfully.")
   } catch (err) {

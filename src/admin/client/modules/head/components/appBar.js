@@ -10,6 +10,7 @@ import ProductsHead from 'modules/products/listHead/index'
 import ProductHead from 'modules/products/editHead/index'
 import BatchListHeaderButtons from 'modules/products/uploadFiles/header/BatchListHeaderButtons'
 import ProductDeleteFilesHeaderButtons from 'modules/products/deleteFiles/header/ProductDeleteFilesHeaderButtons'
+import ProductUpdateFilesHeaderButtons from 'modules/products/updateFiles/header/ProductUpdateFilesHeaderButtons'
 import OrdersHead from 'modules/orders/listHead/index'
 import OrderHead from 'modules/orders/editHead/index'
 import OrderStatusHead from 'modules/orderStatuses/head/index'
@@ -133,6 +134,19 @@ export default class AppBarTop extends React.Component {
     else if(pathname.startsWith('/admin/products/delete-files/')){
       title = messages.batch_view_title;
       leftButton = <Link to="/admin/products/delete-files"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
+    }
+    else if(pathname === '/admin/products/update-files'){
+      title = messages.batch_update_products;
+      leftButton = <Link to="/admin/products"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
+      rightElements = <ProductUpdateFilesHeaderButtons />
+    }
+    else if(pathname === '/admin/products/update-files/new'){
+      title = messages.batch_update_products;
+      leftButton = <Link to="/admin/products/update-files"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
+    }
+    else if(pathname.startsWith('/admin/products/update-files/')){
+      title = messages.batch_view_title;
+      leftButton = <Link to="/admin/products/update-files"><IconButton><FontIcon color="#fff" className="material-icons">arrow_back</FontIcon></IconButton></Link>
     }
     else if(pathname === '/admin/customers'){
       title = messages.customers_title;

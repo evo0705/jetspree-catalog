@@ -60,6 +60,10 @@ export default class Buttons extends React.Component {
     this.props.onProductDeleteFilesClicked();
   };
 
+  onProductUpdateFilesClicked = () => {
+    this.props.onProductUpdateFilesClicked();
+  };
+
   render() {
     const { search, setSearch, selectedCount, onDelete, onCreate } = this.props
 
@@ -125,6 +129,7 @@ export default class Buttons extends React.Component {
           }>
           <MenuItem onClick={this.onProductUploadFilesClicked}>Batch Create Products</MenuItem>
           <MenuItem onClick={this.onProductDeleteFilesClicked}>Batch Delete Products</MenuItem>
+          <MenuItem onClick={this.onProductUpdateFilesClicked}>Batch Update Products</MenuItem>
         </IconMenu>
       </Fragment>
     )

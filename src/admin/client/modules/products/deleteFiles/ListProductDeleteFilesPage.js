@@ -66,7 +66,7 @@ class ListProductDeleteFilesPage extends React.Component {
       <div className={styles.batchList}>
         <Subheader>
           {messages.batch_delete_products}
-          <DropDownMenu value={sortBy} onChange={this.onSortChange}>
+          <DropDownMenu value={sortBy} onChange={this.onSortChange} className={styles.sortMenu}>
             {sortByMenu}
           </DropDownMenu>
         </Subheader>
@@ -102,8 +102,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    fetchBatchList: () => {
-      dispatch(fetchProductDeleteFiles())
+    fetchBatchList: (query) => {
+      dispatch(fetchProductDeleteFiles(query))
     },
   }
 }

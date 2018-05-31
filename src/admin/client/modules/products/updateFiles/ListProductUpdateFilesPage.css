@@ -5,3 +5,7 @@
 .batchListHeaderColumn {
   text-align: center!important;
 }
+.sortMenu {
+  float: right;
+  font-size: 12px!important;
+}

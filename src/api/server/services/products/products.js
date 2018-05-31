@@ -563,23 +563,23 @@ class ProductsService {
     if (!ObjectID.isValid(id)) {
       return Promise.reject("Invalid identifier")
     }
-    const productResponse = await this.getProducts({ ids: id, limit: 1 });
-    const product = productResponse.data.length > 0 ? productResponse.data[0] : {};
+    const productResponse = await this.getProducts({ ids: id, limit: 1 })
+    const product = productResponse.data.length > 0 ? productResponse.data[0] : {}
 
-    if(product.product_id !== null) {
-      product.variants = await this.getProductVariants(product.product_id);
+    if (product.product_id !== null) {
+      product.variants = await this.getProductVariants(product.product_id)
     }
-    return product;
+    return product
   }
 
   async getSingleProductBySlug(slug) {
     const productResponse = await this.getProducts({ slug, limit: 1 })
-    const product = productResponse.data.length > 0 ? productResponse.data[0] : {};
+    const product = productResponse.data.length > 0 ? productResponse.data[0] : {}
 
-    if(product.product_id !== null) {
-      product.variants = await this.getProductVariants(product.product_id);
+    if (product.product_id !== null) {
+      product.variants = await this.getProductVariants(product.product_id)
     }
-    return product;
+    return product
   }
 
   addProduct(data) {
@@ -990,20 +990,39 @@ class ProductsService {
   }
 
   async getProductVariants(productId) {
-    const variantResponse = await this.getProducts({ product_id: productId });
-    const variantList = variantResponse.data.length > 0 ? variantResponse.data : [];
+    const variantResponse = await this.getProducts({ product_id: productId })
+    const variantList = variantResponse.data.length > 0 ? variantResponse.data : []
 
     const variants = variantList.map(variant => {
       return {
-        sku:            variant.sku,
-        name:           variant.name,
-        _id:             variant.id,
-        slug:           variant.slug,
+        sku:  variant.sku,
+        name: variant.name,
+        _id:  variant.id,
+        slug: variant.slug,
       }
-    });
+    })
 
-    return variants;
+    return variants
   }
+
+  async addSuffixToProductsSKU(productSKUArray) {
+    const updatedResponse = await Promise.all(productSKUArray.map(async (SKU) => {
+      const suffixedSKU = `${SKU}_old`
+      await mongo.db.collection("products").update({sku: SKU }, { $set: { sku: suffixedSKU } })
+      return suffixedSKU
+    }));
+    return updatedResponse
+  }
+
+  async revertSuffixFromProductsSKU(productSKUArray) {
+    const updatedResponse = await Promise.all(productSKUArray.map(async (SKU) => {
+      const originalSKU = SKU.replace('_old','');
+      await mongo.db.collection("products").update({sku: SKU }, { $set: { sku: originalSKU } })
+      return originalSKU
+    }));
+    return updatedResponse
+  }
+
 }
 
 module.exports = new ProductsService()

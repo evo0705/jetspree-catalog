@@ -1,14 +1,14 @@
 import React from "react"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
-import { uploadDeleteProductsFile } from "../actions"
+import { uploadUpdateProductsFile } from "../actions"
 import Uploader from "./components/Uploader"
 import Divider from "material-ui/Divider/index"
 import Subheader from "material-ui/Subheader/index"
-import styles from "./NewProductDeleteFilesPage.css"
+import styles from "./NewProductUpdateFilesPage.css"
 import products from "../reducer"
 
-class NewProductDeleteFilesPage extends React.Component {
+class NewProductUpdateFilesPage extends React.Component {
   constructor(props) {
     super(props)
     this.onUploadDeleteProductsFile = this.onUploadDeleteProductsFile.bind(this)
@@ -23,7 +23,7 @@ class NewProductDeleteFilesPage extends React.Component {
 
   navigateToBatchDetail(batchID) {
     const { history } = this.props
-    history.push(`/admin/products/delete-files/${batchID}`)
+    history.push(`/admin/products/update-files/${batchID}`)
   }
 
   onUploadDeleteProductsFile(fileData) {
@@ -53,9 +53,9 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     onUploadDeleteProductsFile: (formData) => {
-      dispatch(uploadDeleteProductsFile(formData))
+      dispatch(uploadUpdateProductsFile(formData))
     },
   }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(NewProductDeleteFilesPage))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(NewProductUpdateFilesPage))

@@ -198,7 +198,7 @@ function getValidDocumentsForInsert(parsedData, categoryList) {
       quantity_inc:        1,
       quantity_min:        1,
       weight:              0,
-      stock_quantity:      0,
+      stock_quantity:      row["Stock Quantity"],
       position:            null,
       date_stock_expected: null,
       date_sale_from:      null,
@@ -221,7 +221,7 @@ async function validateDataForInsert(documentToInsert, parsedData, categoryList)
   const validationErrors = []
   const requiredFields = [
     "SKU", "Slug", "Product ID", "Meta Title", "Meta Description", "Product Name", "Long Description", "Brand", "Category Name", "Image URLs", "Price",
-    "Commission %", "Duty Free", "Country Hints", "Price or Exclusive",
+    "Commission %", "Duty Free", "Country Hints", "Price or Exclusive", "Stock Quantity"
   ]
 
   for (let index = 0; index < requiredFields.length; index++) {
@@ -286,6 +286,10 @@ async function validateDataForInsert(documentToInsert, parsedData, categoryList)
       if (field === "Image URLs") {
         const imageURLs = fieldValue.split("|")
         error.error_messages.push(...await validateImageURLs(imageURLs))
+      }
+
+      if (field === "Stock Quantity" && isNaN(fieldValue) === true) {
+        error.error_messages.push("Must be a number.")
       }
 
     }

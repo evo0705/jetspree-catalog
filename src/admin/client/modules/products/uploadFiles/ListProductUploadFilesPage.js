@@ -66,7 +66,7 @@ class ListProductUploadFilesPage extends React.Component {
       <div className={styles.batchList}>
         <Subheader>
           {messages.batch_create_products}
-          <DropDownMenu value={sortBy} onChange={this.onSortChange}>
+          <DropDownMenu value={sortBy} onChange={this.onSortChange} className={styles.sortMenu}>
             {sortByMenu}
           </DropDownMenu>
         </Subheader>
@@ -102,8 +102,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    fetchBatchList: () => {
-      dispatch(fetchProductUploadFiles())
+    fetchBatchList: (query) => {
+      dispatch(fetchProductUploadFiles(query))
     },
   }
 }

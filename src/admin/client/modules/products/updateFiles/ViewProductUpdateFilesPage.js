@@ -12,13 +12,13 @@ import Subheader from "material-ui/Subheader"
 import Divider from "material-ui/Divider"
 import LinearProgress from "material-ui/LinearProgress"
 import ErrorItem from "./components/ErrorItem"
-import { fetchProductDeleteFileByID } from "../actions"
+import { fetchProductUpdateFileByID } from "../actions"
 import messages from "lib/text"
-import styles from "./ViewProductDeleteFilesPage.css"
+import styles from "./ViewProductUpdateFilesPage.css"
 import moment from "moment"
 import products from "../reducer"
 
-class ViewProductDeleteFilesPage extends React.Component {
+class ViewProductUpdateFilesPage extends React.Component {
   constructor(props) {
     super(props)
   }
@@ -145,9 +145,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     fetchProductDeleteFileByID: () => {
       const { id } = ownProps.match.params
-      dispatch(fetchProductDeleteFileByID(id))
+      dispatch(fetchProductUpdateFileByID(id))
     },
   }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ViewProductDeleteFilesPage))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ViewProductUpdateFilesPage))
