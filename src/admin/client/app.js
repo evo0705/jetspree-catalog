@@ -86,7 +86,6 @@ export default () => (
             <Route path="/admin/products/update-files/new" component={NewProductUpdateFiles}/>
             <Route path="/admin/products/update-files/:id" component={ViewProductUpdateFiles}/>
             <Route path="/admin/products/categories" exact component={ProductCategories}/>
-            <Route path="/admin/products/categories" exact component={ProductCategories}/>
             <Route path="/admin/orders" exact component={Orders}/>
             <Route path="/admin/orders/statuses" exact component={OrderStatuses}/>
             <Route path="/admin/order/:orderId" exact component={OrderDetails}/>
