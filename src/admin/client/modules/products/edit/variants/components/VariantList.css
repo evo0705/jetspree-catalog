@@ -55,6 +55,14 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.gridRowColRight {
+  flex: 1 1;
+  overflow: hidden;
+  padding: 15px 24px;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 .gridActionCol {
   overflow: hidden;

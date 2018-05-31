@@ -422,6 +422,7 @@ class ProductsService {
       ids,
       tags,
       slug,
+      product_id,
     } = params
 
     // parse values
@@ -434,6 +435,7 @@ class ProductsService {
     ids = parse.getString(ids)
     tags = parse.getString(tags)
     slug = parse.getString(slug)
+    product_id = parse.getNumberIfPositive(product_id)
 
     let queries = [{
       is_deleted: false,
@@ -511,6 +513,12 @@ class ProductsService {
       })
     }
 
+    if (product_id && product_id.length > 0) {
+      queries.push({
+        product_id: product_id,
+      })
+    }
+
     if (sku && sku.length > 0) {
       if (sku.includes(",")) {
         // multiple values
@@ -567,7 +575,7 @@ class ProductsService {
     const product = productResponse.data.length > 0 ? productResponse.data[0] : {}
 
     if (product.product_id !== null) {
-      product.variants = await this.getProductVariants(product.product_id)
+      product.variants = await this.getProductVariants(product.product_id, product.sku)
     }
     return product
   }
@@ -989,16 +997,21 @@ class ProductsService {
     }
   }
 
-  async getProductVariants(productId) {
+  async getProductVariants(productId, SKU) {
     const variantResponse = await this.getProducts({ product_id: productId })
     const variantList = variantResponse.data.length > 0 ? variantResponse.data : []
+    const variants = []
 
-    const variants = variantList.map(variant => {
-      return {
-        sku:  variant.sku,
-        name: variant.name,
-        _id:  variant.id,
-        slug: variant.slug,
+    variantList.map(variant => {
+      if(variant.sku !== SKU) {
+        variants.push({
+          sku:            variant.sku,
+          name:           variant.name,
+          _id:            variant.id,
+          slug:           variant.slug,
+          price:          variant.price,
+          stock_quantity: variant.stock_quantity,
+        })
       }
     })
 

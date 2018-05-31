@@ -14,6 +14,12 @@ const VariantItem = ({ variant }) => {
       <div className={styles.gridRowCol}>
         {variant.name}
       </div>
+      <div className={styles.gridRowColRight}>
+        {variant.price}
+      </div>
+      <div className={styles.gridRowColRight}>
+        {variant.stock_quantity}
+      </div>
       <div className={styles.gridActionCol}>
         <IconButton title={messages.editVariant} href={variant._id}>
           <FontIcon color="#a1a1a1" className="material-icons">edit</FontIcon>
@@ -38,6 +44,8 @@ const ProductVariantsGrid = ({ settings, options, variants }) => {
         <div className={styles.gridHeadRow}>
           <div className={styles.gridCol}>{messages.products_sku}</div>
           <div className={styles.gridCol}>{messages.variantTitle}</div>
+          <div className={styles.gridCol}>{messages.products_pricing}</div>
+          <div className={styles.gridCol}>{messages.products_stockQuantity}</div>
           <div className={styles.gridActionCol}>{messages.actions}</div>
         </div>
         {variantRows}
