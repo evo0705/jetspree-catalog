@@ -1,0 +1,14 @@
+.batchDetailContainer {
+  background-color: #FFFFFF;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+.batchDetailTable {
+  table-layout: auto!important;
+}
+.errorMessageRow {
+  border: 0;
+}
+.errorMessageColumn {
+  text-align: center;
+}
