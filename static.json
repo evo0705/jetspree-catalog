@@ -1,0 +1,9 @@
+{
+  "root": "build/",
+  "routes": {
+    "/css/*": "/css/",
+    "/js/*": "/js/",
+    "/**": "/admin/index.html"
+  },
+  "https_only": true
+}
