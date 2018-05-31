@@ -7,9 +7,9 @@ import Divider from "material-ui/Divider"
 import DropDownMenu from "material-ui/DropDownMenu"
 import MenuItem from "material-ui/MenuItem"
 import BatchListItem from "./components/BatchListItem"
-import { fetchProductUploadFiles } from "../actions"
+import { fetchProductUpdateFiles } from "../actions"
 import messages from "lib/text"
-import styles from "./ListProductUploadFilesPage.css"
+import styles from "./ListProductUpdateFilesPage.css"
 import products from "../reducer"
 
 const sortByMenuList = [
@@ -19,7 +19,7 @@ const sortByMenuList = [
   { label: "Status (ASC)", value: "status_asc", field: "status", sortType: 1 },
 ]
 
-class ListProductUploadFilesPage extends React.Component {
+class ListProductUpdateFilesPage extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -65,7 +65,7 @@ class ListProductUploadFilesPage extends React.Component {
     return (
       <div className={styles.batchList}>
         <Subheader>
-          {messages.batch_create_products}
+          {messages.batch_update_products}
           <DropDownMenu value={sortBy} onChange={this.onSortChange} className={styles.sortMenu}>
             {sortByMenu}
           </DropDownMenu>
@@ -103,9 +103,9 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     fetchBatchList: (query) => {
-      dispatch(fetchProductUploadFiles(query))
+      dispatch(fetchProductUpdateFiles(query))
     },
   }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ListProductUploadFilesPage))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ListProductUpdateFilesPage))

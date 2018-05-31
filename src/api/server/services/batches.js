@@ -6,6 +6,7 @@ import AWS from"aws-sdk"
 import uuid from"uuid/v1"
 import ProductBatchUploadQueue from "../../../queue/ProductBatchUploadQueue"
 import ProductBatchDeleteQueue from "../../../queue/ProductBatchDeleteQueue"
+import ProductBatchUpdateQueue from "../../../queue/ProductBatchUpdateQueue"
 
 const S3 = new AWS.S3({
   accessKeyId:     settings.bucketeerAWSAccessKeyId,
@@ -16,6 +17,7 @@ const S3 = new AWS.S3({
 export const BATCH_ACTION = {
   CREATE_PRODUCTS: "create_products",
   DELETE_PRODUCTS: "delete_products",
+  UPDATE_PRODUCTS: "update_products",
 }
 
 export const BATCH_STATUS = {
@@ -91,6 +93,9 @@ export default class BatchUploadService {
           break
         case BATCH_ACTION.DELETE_PRODUCTS:
           await ProductBatchDeleteQueue.publish(inserted.insertedId.toString())
+          break
+        case BATCH_ACTION.UPDATE_PRODUCTS:
+          await ProductBatchUpdateQueue.publish(inserted.insertedId.toString())
           break
       }
 

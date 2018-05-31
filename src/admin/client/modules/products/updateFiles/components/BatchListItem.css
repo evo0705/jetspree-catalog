@@ -1,0 +1,10 @@
+.batchItemColumn {
+  text-align: center!important;
+}
+
+.batchDateItemColumn {
+  text-align: center!important;
+  white-space: normal!important;
+  overflow: auto!important;
+  text-overflow: initial!important;
+}

@@ -12,15 +12,15 @@ import cloudinary from "../api/server/services/products/cloudinary"
 import _ from "lodash"
 import parse from "../api/server/lib/parse"
 
-export const BULK_PRODUCT_UPLOAD = "bulk_product_upload"
+const BULK_PRODUCT_UPDATE = "bulk_product_update"
 
-export default class ProductBatchUploadQueue {
+export default class ProductBatchUpdateQueue {
   static async publish(batchID) {
-    return Queue.shared.publishMessageToQueue(BULK_PRODUCT_UPLOAD, { batchID })
+    return Queue.shared.publishMessageToQueue(BULK_PRODUCT_UPDATE, { batchID })
   }
 
   static async process() {
-    return Queue.shared.consumeMessagesFromQueue(BULK_PRODUCT_UPLOAD, consume)
+    return Queue.shared.consumeMessagesFromQueue(BULK_PRODUCT_UPDATE, consume)
   }
 }
 
@@ -56,7 +56,7 @@ async function consume(data) {
 
     fileBuffer = await download(batchItem.file_url)
   } catch (err) {
-    await BatchUploadService.update(batchItem._id, {
+    await BatchUploadService.update(batchID, {
       date_aborted: new Date,
       status:       BATCH_STATUS.ABORTED,
     })
@@ -64,7 +64,7 @@ async function consume(data) {
   }
 
   // 2. Parse CSV
-  let productsToInsert = []
+  let productsToUpdate = []
   let validationErrors = []
   try {
     const csvString = fileBuffer.toString("utf-8")
@@ -107,41 +107,67 @@ async function consume(data) {
     })
 
     // Parse data into a valid Products Document
-    productsToInsert = getValidDocumentsForInsert(parsedData, categoryList)
+    productsToUpdate = getValidDocumentsForUpdate(parsedData, categoryList)
 
     await BatchUploadService.update(batchItem._id, {
       date_parsed: new Date(),
       status:      BATCH_STATUS.PARSED,
-      data:        { products: productsToInsert },
+      data:        { products: productsToUpdate },
     })
   } catch (err) {
     await BatchUploadService.update(batchItem._id, { date_stopped: new Date(), status: "stopped" })
     return new MessageResponse(`Couldn't read file: ${err}`, false, false)
   }
 
-  // 3. Attempt to create products
+  // 3. Attempt to suffix existing SKUs
+  let productsToDelete = []
+  let suffixedSKUs = []
+  try {
+    productsToDelete = productsToUpdate.map(product => product.sku)
+    suffixedSKUs = await ProductsService.addSuffixToProductsSKU(productsToDelete)
+  } catch (err) {
+    await BatchUploadService.update(batchItem._id, {
+      date_aborted: new Date,
+      status:       BATCH_STATUS.ABORTED,
+    })
+    return new MessageResponse(`Error while suffixing product SKUs: ${err}`, false, true)
+  }
+
+  // 4. Attempt to create products
   let totalCount = 0
   try {
-    const insertedResponse = await ProductsService.addProducts(productsToInsert)
+    const insertedResponse = await ProductsService.addProducts(productsToUpdate)
     totalCount = insertedResponse.insertedCount
   } catch (err) {
     await BatchUploadService.update(batchItem._id, {
       date_aborted: new Date,
       status:       BATCH_STATUS.ABORTED,
     })
+    await ProductsService.revertSuffixFromProductsSKU(suffixedSKUs)
     return new MessageResponse(`Error while creating products: ${err}`, false, true)
   }
+
+  // 5. Attempt to delete products
+  try {
+    await ProductsService.deleteProductsBySKU(suffixedSKUs)
+  } catch (err) {
+    await BatchUploadService.update(batchItem._id, {
+      date_aborted: new Date,
+      status:       BATCH_STATUS.ABORTED,
+    })
+    return new MessageResponse(`Error while deleting products: ${err}`, false, true)
+  }
+
 
   await BatchUploadService.update(batchItem._id, {
     date_completed: new Date,
     status:         BATCH_STATUS.COMPLETED,
   })
 
-  // Return success
-  return new MessageResponse(`Created ${totalCount} products`, true)
+  return new MessageResponse(`Updated ${totalCount} products`, true)
 }
 
-function getValidDocumentsForInsert(parsedData, categoryList) {
+function getValidDocumentsForUpdate(parsedData, categoryList) {
   return parsedData.map(row => {
     // Fetch category id
     const categoryID = categoryList.find(category => category.name === row["Category Name"])._id
@@ -239,19 +265,12 @@ async function validateDataForInsert(documentToInsert, parsedData, categoryList)
       if (field === "SKU") {
         const hasDuplicatedSKU = parsedData.filter(data => data["SKU"] === fieldValue).length > 1
         if (hasDuplicatedSKU) {
-          error.error_messages.push(`Duplicated SKU.`)
+          error.error_messages.push(`Duplicate SKU in the uploaded file`)
         }
 
         const isSkuExists = await ProductsService.isSkuExists(fieldValue)
-        if (isSkuExists) {
-          error.error_messages.push("Already exists.")
-        }
-      }
-
-      if (field === "Slug") {
-        const isSlugExits = await ProductsService.isSlugExists(fieldValue)
-        if (isSlugExits) {
-          error.error_messages.push("Already exists.")
+        if (!isSkuExists) {
+          error.error_messages.push("SKU doesn't exists in the catalog")
         }
       }
 
@@ -333,3 +352,4 @@ async function validateImageURLs(imageURLs) {
   )
   return errors.filter(error => error !== null)
 }
+

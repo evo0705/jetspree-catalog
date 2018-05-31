@@ -14,6 +14,9 @@ import ViewProductUploadFiles from "routes/products/uploadFiles/ViewProductUploa
 import ListProductDeleteFiles from "routes/products/deleteFiles/ListProductDeleteFiles"
 import NewProductDeleteFiles from "routes/products/deleteFiles/NewProductDeleteFiles"
 import ViewProductDeleteFiles from "routes/products/deleteFiles/ViewProductDeleteFiles"
+import ListProductUpdateFiles from "routes/products/updateFiles/ListProductUpdateFiles"
+import NewProductUpdateFiles from "routes/products/updateFiles/NewProductUpdateFiles"
+import ViewProductUpdateFiles from "routes/products/updateFiles/ViewProductUpdateFiles"
 import ProductCategories from "routes/products/categories"
 import Customers from "routes/customers"
 import CustomerDetails from "routes/customers/edit"
@@ -79,6 +82,9 @@ export default () => (
             <Route path="/admin/products/delete-files" exact component={ListProductDeleteFiles}/>
             <Route path="/admin/products/delete-files/new" component={NewProductDeleteFiles}/>
             <Route path="/admin/products/delete-files/:id" component={ViewProductDeleteFiles}/>
+            <Route path="/admin/products/update-files" exact component={ListProductUpdateFiles}/>
+            <Route path="/admin/products/update-files/new" component={NewProductUpdateFiles}/>
+            <Route path="/admin/products/update-files/:id" component={ViewProductUpdateFiles}/>
             <Route path="/admin/products/categories" exact component={ProductCategories}/>
             <Route path="/admin/orders" exact component={Orders}/>
             <Route path="/admin/orders/statuses" exact component={OrderStatuses}/>

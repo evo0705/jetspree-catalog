@@ -32,6 +32,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     onProductDeleteFilesClicked: () => {
       ownProps.history.push('/admin/products/delete-files');
     },
+    onProductUpdateFilesClicked: () => {
+      ownProps.history.push('/admin/products/update-files');
+    },
   }
 }
 

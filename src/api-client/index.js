@@ -10,6 +10,7 @@ import ProductVariants from "./api/products/variants"
 import ProductImages from "./api/products/images"
 import ProductUploadFiles from "./api/products/uploadFiles"
 import ProductDeleteFiles from "./api/products/deleteFiles"
+import ProductUpdateFiles from "./api/products/updateFiles"
 import Sitemap from "./api/sitemap"
 import Theme from "./api/theme/theme"
 import ThemeSettings from "./api/theme/settings"
@@ -68,6 +69,7 @@ export default class Client {
     this.products.images = new ProductImages(apiClient)
     this.products.uploadFiles = new ProductUploadFiles(apiClient)
     this.products.deleteFiles = new ProductDeleteFiles(apiClient)
+    this.products.updateFiles = new ProductUpdateFiles(apiClient)
     this.productCategories = new ProductCategories(apiClient)
     this.customers = new Customers(apiClient)
     this.orders = new Orders(apiClient)
