@@ -24,7 +24,7 @@ class CloudinaryService {
     })
   }
 
-  async addImage(productId, req) {
+  async addImage(req) {
     const imageFiles = req.files;
     const dataURIs = imageFiles.map(image => {
       return "data:" + image.mimetype + ";base64," + image.buffer.toString("base64");
