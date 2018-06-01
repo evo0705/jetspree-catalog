@@ -258,6 +258,7 @@ class ProductsService {
         cost_price:          costPrice,
         regular_price:       regularPrice,
         sale_price:          salePrice,
+        retail_price:        1,
         service_fee:         1,
         country_hints:       1,
         date_sale_from:      1,
@@ -634,6 +635,11 @@ class ProductsService {
     return updated.matchedCount
   }
 
+  async removeProductsBySKU(productSKUArray) {
+    const deleted = await mongo.db.collection("products").deleteMany({ sku: { $in: productSKUArray } })
+    return deleted.matchedCount
+  }
+
   getValidDocumentForInsert(data) {
     //  Allow empty product to create draft
 
@@ -772,6 +778,10 @@ class ProductsService {
 
     if (data.regular_price !== undefined) {
       product.regular_price = parse.getNumberIfPositive(data.regular_price) || 0
+    }
+
+    if (data.retail_price !== undefined) {
+      product.retail_price = parse.getNumberIfPositive(data.retail_price) || 0
     }
 
     if (data.sale_price !== undefined) {
@@ -1003,7 +1013,7 @@ class ProductsService {
     const variants = []
 
     variantList.map(variant => {
-      if(variant.sku !== SKU) {
+      if (variant.sku !== SKU) {
         variants.push({
           sku:            variant.sku,
           name:           variant.name,
@@ -1021,18 +1031,18 @@ class ProductsService {
   async addSuffixToProductsSKU(productSKUArray) {
     const updatedResponse = await Promise.all(productSKUArray.map(async (SKU) => {
       const suffixedSKU = `${SKU}_old`
-      await mongo.db.collection("products").update({sku: SKU }, { $set: { sku: suffixedSKU } })
+      await mongo.db.collection("products").update({ sku: SKU }, { $set: { sku: suffixedSKU } })
       return suffixedSKU
-    }));
+    }))
     return updatedResponse
   }
 
   async revertSuffixFromProductsSKU(productSKUArray) {
     const updatedResponse = await Promise.all(productSKUArray.map(async (SKU) => {
-      const originalSKU = SKU.replace('_old','');
-      await mongo.db.collection("products").update({sku: SKU }, { $set: { sku: originalSKU } })
+      const originalSKU = SKU.replace("_old", "")
+      await mongo.db.collection("products").update({ sku: SKU }, { $set: { sku: originalSKU } })
       return originalSKU
-    }));
+    }))
     return updatedResponse
   }
 

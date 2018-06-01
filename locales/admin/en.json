@@ -87,6 +87,7 @@
   "products_visibility": "Visibility",
   "products_inventory": "Inventory",
   "products_attributes": "Attributes",
+  "productsRetailPrice": "Retail Price",
   "productCategories_title": "Product Categories",
   "productCategories_titleAdd": "Add new category",
   "productCategories_titleEdit": "Edit category",
