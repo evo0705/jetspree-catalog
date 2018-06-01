@@ -70,7 +70,7 @@ class ProductImagesService {
 
     if(settings.enableCloudinary === true) { // use cloudinary to store images
       try {
-        uploadedImages = await CloudinaryService.addImage(productId, req);
+        uploadedImages = await CloudinaryService.addImage(req);
       } catch (error) {
         console.error("Cloudinary image upload failed:", error)
         res.status(500).send(this.getErrorMessage(error));

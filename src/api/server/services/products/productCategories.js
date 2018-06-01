@@ -10,6 +10,8 @@ const SettingsService = require("../settings/settings")
 const mongo = require("../../lib/mongo")
 const utils = require("../../lib/utils")
 const parse = require("../../lib/parse")
+const cloudinary = require("cloudinary")
+const CloudinaryService = require("../products/cloudinary")
 
 class ProductCategoriesService {
   constructor() {
@@ -254,7 +256,15 @@ class ProductCategoriesService {
       }
 
       if (item.image) {
-        item.image = url.resolve(domain, settings.categoriesUploadUrl + "/" + item.id + "/" + item.image)
+        if (settings.enableCloudinary === true) {
+          item.image.url = cloudinary.url(item.image.external_id, {
+            quality:      "auto",
+            fetch_format: "auto",
+            secure:       true,
+          })
+        } else {
+          item.image = url.resolve(domain, settings.categoriesUploadUrl + "/" + item.id + "/" + item.image)
+        }
       }
     }
 
@@ -267,39 +277,63 @@ class ProductCategoriesService {
     this.updateCategory(id, { "image": "" })
   }
 
-  uploadCategoryImage(req, res) {
-    let categoryId = req.params.id
-    let form = new formidable.IncomingForm(),
-      file_name = null,
-      file_size = 0
+  async uploadCategoryImage(req, res) {
+    const categoryId = req.params.id
+    const categoryObjectID = new ObjectID(categoryId)
 
-    form
-      .on("fileBegin", (name, file) => {
-        // Emitted whenever a field / value pair has been received.
-        let dir = path.resolve(settings.categoriesUploadPath + "/" + categoryId)
-        fse.emptyDirSync(dir)
-        file.name = utils.getCorrectFileName(file.name)
-        file.path = dir + "/" + file.name
-      })
-      .on("file", function (field, file) {
-        // every time a file has been uploaded successfully,
-        file_name = file.name
-        file_size = file.size
-      })
-      .on("error", (err) => {
+    if (settings.enableCloudinary === true) {
+      // use cloudinary to store images
+      try{
+        const uploadedImage = await CloudinaryService.addImage(req)
+        const insertedImage = await mongo.db.collection("productCategories").updateOne({
+          _id: categoryObjectID,
+        }, {
+          $set: { image: uploadedImage[0] },
+        })
+        insertedImage.url = cloudinary.url(insertedImage.external_id, {
+          quality:      "auto",
+          fetch_format: "auto",
+          secure:       true,
+        })
+        res.json(insertedImage)
+      }catch(err){
+        console.error("Cloudinary image upload failed:", err)
         res.status(500).send(this.getErrorMessage(err))
-      })
-      .on("end", () => {
-        //Emitted when the entire request has been received, and all contained files have finished flushing to disk.
-        if (file_name) {
-          this.updateCategory(categoryId, { "image": file_name })
-          res.send({ "file": file_name, "size": file_size })
-        } else {
-          res.status(400).send(this.getErrorMessage("Required fields are missing"))
-        }
-      })
+      }
 
-    form.parse(req)
+    } else { // use filesystem to store images
+      let form = new formidable.IncomingForm(),
+        file_name = null,
+        file_size = 0
+
+      form
+        .on("fileBegin", (name, file) => {
+          // Emitted whenever a field / value pair has been received.
+          let dir = path.resolve(settings.categoriesUploadPath + "/" + categoryId)
+          fse.emptyDirSync(dir)
+          file.name = utils.getCorrectFileName(file.name)
+          file.path = dir + "/" + file.name
+        })
+        .on("file", function (field, file) {
+          // every time a file has been uploaded successfully,
+          file_name = file.name
+          file_size = file.size
+        })
+        .on("error", (err) => {
+          res.status(500).send(this.getErrorMessage(err))
+        })
+        .on("end", () => {
+          //Emitted when the entire request has been received, and all contained files have finished flushing to disk.
+          if (file_name) {
+            this.updateCategory(categoryId, { "image": file_name })
+            res.send({ "file": file_name, "size": file_size })
+          } else {
+            res.status(400).send(this.getErrorMessage("Required fields are missing"))
+          }
+        })
+
+      form.parse(req)
+    }
   }
 
 }

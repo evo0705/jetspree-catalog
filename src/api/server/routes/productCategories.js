@@ -1,6 +1,10 @@
 "use strict"
 
+const multer = require("multer")
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage })
 const security = require("../lib/security")
+const settings = require("../lib/settings")
 const CategoriesService = require("../services/products/productCategories")
 
 class ProductCategoriesRoute {
@@ -15,7 +19,7 @@ class ProductCategoriesRoute {
     this.router.get("/v1/product_categories/:id", security.checkUserScope.bind(this, security.scope.READ_PRODUCT_CATEGORIES), this.getSingleCategory.bind(this))
     this.router.put("/v1/product_categories/:id", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCT_CATEGORIES), this.updateCategory.bind(this))
     this.router.delete("/v1/product_categories/:id", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCT_CATEGORIES), this.deleteCategory.bind(this))
-    this.router.post("/v1/product_categories/:id/image", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCT_CATEGORIES), this.uploadCategoryImage.bind(this))
+    this.router.post("/v1/product_categories/:id/image", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCT_CATEGORIES), this.assignUploadType.bind(this), this.uploadCategoryImage.bind(this))
     this.router.delete("/v1/product_categories/:id/image", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCT_CATEGORIES), this.deleteCategoryImage.bind(this))
 
     this.router.get("/v1/product_categories_by_slug/:slug", security.checkUserScope.bind(this, security.scope.READ_PRODUCT_CATEGORIES), this.getSingleCategoryBySlug.bind(this))
@@ -78,6 +82,14 @@ class ProductCategoriesRoute {
   deleteCategoryImage(req, res, next) {
     CategoriesService.deleteCategoryImage(req.params.id)
     res.end()
+  }
+
+  assignUploadType(req, res, next) {
+    if (settings.enableCloudinary === true) {
+      upload.array("file")(req, res, next)
+    } else {
+      next()
+    }
   }
 }
 
