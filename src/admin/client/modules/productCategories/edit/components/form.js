@@ -65,7 +65,7 @@ const ProductCategoryEditForm = ({
 
   if(initialValues){
     categoryId = initialValues.id
-    imageUrl = initialValues.image;
+    imageUrl = initialValues.image.url || "";
   }
 
   if(categoryId) {
