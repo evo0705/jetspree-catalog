@@ -149,7 +149,7 @@ async function consume(data) {
 
   // 5. Attempt to delete products
   try {
-    await ProductsService.deleteProductsBySKU(suffixedSKUs)
+    await ProductsService.removeProductsBySKU(suffixedSKUs)
   } catch (err) {
     await BatchUploadService.update(batchItem._id, {
       date_aborted: new Date,
@@ -157,7 +157,6 @@ async function consume(data) {
     })
     return new MessageResponse(`Error while deleting products: ${err}`, false, true)
   }
-
 
   await BatchUploadService.update(batchItem._id, {
     date_completed: new Date,
@@ -201,7 +200,8 @@ function getValidDocumentsForUpdate(parsedData, categoryList) {
       brand:               row["Brand"],
       category_id:         categoryID,
       category_ids:        [categoryID],
-      regular_price:       parse.getNumberIfPositive(row["Price"]) || 0,
+      regular_price:       parse.getNumberIfPositive(row["Price"]) || 0, // display price
+      retail_price:        parse.getNumberIfPositive(row["Retail Price"]) || 0, // competitor's price or original price.
       commission:          parse.getNumberIfPositive(row["Commission %"]) || 5,
       duty_free:           parse.getBooleanIfValid(row["Duty Free"], false),
       country_hints:       row["Country Hints"].split("|"),

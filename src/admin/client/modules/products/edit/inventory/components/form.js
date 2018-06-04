@@ -17,7 +17,7 @@ import Divider from 'material-ui/Divider';
 const validate = values => {
   const errors = {}
   const requiredFields = ['name']
-  const numberFields = ['regular_price', 'sale_price', 'stock_quantity', 'weight', 'service_fee']
+  const numberFields = ['regular_price', 'retail_price', 'sale_price', 'stock_quantity', 'weight', 'service_fee']
 
   requiredFields.map(field => {
     if (values && !values[field]) {
@@ -83,10 +83,16 @@ const ProductInventoryForm = ({ handleSubmit, pristine, reset, submitting, initi
               <div className="blue-title">{messages.products_pricing}</div>
               <div className="row">
                 <div className="col-xs-6">
+                  <Field name="retail_price" component={TextField} floatingLabelText={messages.productsRetailPrice  + ` (${settings.currency_symbol})`} fullWidth={true}/>
+                </div>
+                <div className="col-xs-6">
                   <Field name="regular_price" component={TextField} floatingLabelText={messages.products_regularPrice + ` (${settings.currency_symbol})`} fullWidth={true}/>
                 </div>
                 <div className="col-xs-6">
                   <Field name="sale_price" component={TextField} floatingLabelText={messages.products_salePrice + ` (${settings.currency_symbol})`} fullWidth={true}/>
+                </div>
+                <div className="col-xs-6">
+                  <Field name="service_fee" component={TextField} floatingLabelText={messages.products_service_fee} fullWidth={true}/>
                 </div>
                 <div className="col-xs-6">
                   <Field name="date_sale_from"
@@ -108,9 +114,6 @@ const ProductInventoryForm = ({ handleSubmit, pristine, reset, submitting, initi
                     component={CountrySelect}
                     labelText={messages.products_country_hints}
                   />
-                </div>
-                <div className="col-xs-6">
-                  <Field name="service_fee" component={TextField} floatingLabelText={messages.products_service_fee} fullWidth={true}/>
                 </div>
               </div>
             </div>

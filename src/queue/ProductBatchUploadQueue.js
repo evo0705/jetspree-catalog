@@ -175,7 +175,8 @@ function getValidDocumentsForInsert(parsedData, categoryList) {
       brand:               row["Brand"],
       category_id:         categoryID,
       category_ids:        [categoryID],
-      regular_price:       parse.getNumberIfPositive(row["Price"]) || 0,
+      regular_price:       parse.getNumberIfPositive(row["Price"]) || 0, // display price
+      retail_price:        parse.getNumberIfPositive(row["Retail Price"]) || 0, // competitor's price or original price.
       commission:          parse.getNumberIfPositive(row["Commission %"]) || 5,
       duty_free:           parse.getBooleanIfValid(row["Duty Free"], false),
       country_hints:       row["Country Hints"].split("|"),
