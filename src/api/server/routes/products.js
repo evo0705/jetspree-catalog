@@ -22,6 +22,7 @@ class ProductsRoute {
   registerRoutes() {
     this.router.get("/v1/products", security.checkUserScope.bind(this, security.scope.READ_PRODUCTS), this.getProducts.bind(this))
     this.router.post("/v1/products", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.addProduct.bind(this))
+    this.router.post("/v1/products/import", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.addProducts.bind(this))
     this.router.get("/v1/products/:productId", security.checkUserScope.bind(this, security.scope.READ_PRODUCTS), this.getSingleProduct.bind(this))
     this.router.put("/v1/products/:productId", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.updateProduct.bind(this))
     this.router.delete("/v1/products/:productId", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.deleteProduct.bind(this))
@@ -81,6 +82,12 @@ class ProductsRoute {
 
   addProduct(req, res, next) {
     ProductsService.addProduct(req.body).then(data => {
+      res.send(data)
+    }).catch(next)
+  }
+
+  addProducts(req, res, next) {
+    ProductsService.addProducts(req.body).then(data => {
       res.send(data)
     }).catch(next)
   }

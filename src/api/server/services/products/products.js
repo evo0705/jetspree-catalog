@@ -597,6 +597,12 @@ class ProductsService {
   }
 
   async addProducts(dataToInsert) {
+    dataToInsert.forEach(data => {
+      data.date_created = new Date(data.date_created)
+      data.images.forEach(image => {
+        image.id = new ObjectID()
+      })
+    })
     return await mongo.db.collection("products").insertMany(dataToInsert)
   }
 
@@ -1003,7 +1009,7 @@ class ProductsService {
     const variants = []
 
     variantList.map(variant => {
-      if(variant.sku !== SKU) {
+      if (variant.sku !== SKU) {
         variants.push({
           sku:            variant.sku,
           name:           variant.name,
@@ -1021,18 +1027,18 @@ class ProductsService {
   async addSuffixToProductsSKU(productSKUArray) {
     const updatedResponse = await Promise.all(productSKUArray.map(async (SKU) => {
       const suffixedSKU = `${SKU}_old`
-      await mongo.db.collection("products").update({sku: SKU }, { $set: { sku: suffixedSKU } })
+      await mongo.db.collection("products").update({ sku: SKU }, { $set: { sku: suffixedSKU } })
       return suffixedSKU
-    }));
+    }))
     return updatedResponse
   }
 
   async revertSuffixFromProductsSKU(productSKUArray) {
     const updatedResponse = await Promise.all(productSKUArray.map(async (SKU) => {
-      const originalSKU = SKU.replace('_old','');
-      await mongo.db.collection("products").update({sku: SKU }, { $set: { sku: originalSKU } })
+      const originalSKU = SKU.replace("_old", "")
+      await mongo.db.collection("products").update({ sku: SKU }, { $set: { sku: originalSKU } })
       return originalSKU
-    }));
+    }))
     return updatedResponse
   }
 
