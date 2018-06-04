@@ -199,7 +199,7 @@ function getValidDocumentsForInsert(parsedData, categoryList) {
       quantity_inc:        1,
       quantity_min:        1,
       weight:              0,
-      stock_quantity:      row["Stock Quantity"],
+      stock_quantity:      parse.getNumberIfPositive(row["Stock Quantity"]),
       position:            null,
       date_stock_expected: null,
       date_sale_from:      null,
