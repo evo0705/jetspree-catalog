@@ -597,13 +597,11 @@ class ProductsService {
   }
 
   async addProducts(dataToInsert) {
-    dataToInsert.forEach(data => {
-      data.date_created = new Date(data.date_created)
-      data.images.forEach(image => {
-        image.id = new ObjectID()
-      })
-    })
-    return await mongo.db.collection("products").insertMany(dataToInsert)
+    const documentsToInsert = await Promise.all(
+      dataToInsert.map(async data => {
+        return await this.getValidDocumentForInsert(data)
+      }))
+    return await mongo.db.collection("products").insertMany(documentsToInsert)
   }
 
   updateProduct(id, data) {
@@ -687,6 +685,21 @@ class ProductsService {
     product.category_id = parse.getObjectIDIfValid(data.category_id)
     product.category_ids = parse.getArrayOfObjectID(data.category_ids)
     product.is_deleted = parse.getBooleanIfValid(data.is_deleted, false)
+
+    if (data.product_id) {
+      product.product_id = data.product_id
+    }
+
+    if (data.images) {
+      product.images = data.images.map(image => {
+        return {
+          id:          image.id || new ObjectID(),
+          alt:         image.alt || "",
+          position:    image.position || 99,
+          external_id: image.external_id,
+        }
+      })
+    }
 
     if (data.dimensions) {
       product.dimensions = data.dimensions
