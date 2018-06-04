@@ -686,6 +686,10 @@ class ProductsService {
     product.category_ids = parse.getArrayOfObjectID(data.category_ids)
     product.is_deleted = parse.getBooleanIfValid(data.is_deleted, false)
 
+    if (data.date_created) {
+      product.date_created = new Date(data.date_created)
+    }
+
     if (data.product_id) {
       product.product_id = data.product_id
     }
