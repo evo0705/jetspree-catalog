@@ -43,7 +43,6 @@
   "scripts": {
     "build-api": "rm -rf ./build; babel . --out-dir build --ignore node_modules",
     "build-web": "rm -rf ./build; webpack --optimize-minimize --colors --progress",
-    "build-api-win32": "rmdir /s /q build && babel . --out-dir build --ignore node_modules",
     "heroku-postbuild": "bash post_build.sh",
     "watch": "webpack-dev-server --hot --colors --port 3000 --config webpack.dev.config.babel.js",
     "serve-worker": "node ./build/src/workers/product-batch-worker.js",
