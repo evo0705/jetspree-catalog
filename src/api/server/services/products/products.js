@@ -1048,22 +1048,7 @@ class ProductsService {
   async getProductVariants(productId, SKU) {
     const variantResponse = await this.getProducts({ product_id: productId })
     const variantList = variantResponse.data.length > 0 ? variantResponse.data : []
-    const variants = []
-
-    variantList.map(variant => {
-      if (variant.sku !== SKU) {
-        variants.push({
-          sku:            variant.sku,
-          name:           variant.name,
-          _id:            variant.id,
-          slug:           variant.slug,
-          price:          variant.price,
-          stock_quantity: variant.stock_quantity,
-        })
-      }
-    })
-
-    return variants
+    return variantList.filter(variant => variant.sku !== SKU).map(variant => variant.sku)
   }
 
   async addSuffixToProductsSKU(productSKUArray) {
