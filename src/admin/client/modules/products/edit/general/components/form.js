@@ -57,6 +57,7 @@ const ProductGeneralForm = ({ handleSubmit, pristine, reset, submitting, initial
       <form onSubmit={handleSubmit}>
         <Paper className="paper-box" zDepth={1}>
             <div className={style.innerBox}>
+              <Field name="product_id" component={TextField} floatingLabelText={messages.products_id+' *'} fullWidth={true}/>
               <Field name="name" component={TextField} floatingLabelText={messages.products_name+' *'} fullWidth={true}/>
               <Field name="slug" component={TextField} floatingLabelText={messages.slug} fullWidth={true}/>
               <p className="field-hint">{messages.help_slug}</p>
