@@ -192,7 +192,7 @@ function getValidDocumentsForUpdate(parsedData, categoryList) {
     return {
       sku:                 row["SKU"],
       slug:                row["Slug"],
-      product_id:          parse.getNumberIfPositive(row["Product ID"]),
+      product_id:          row["Product ID"],
       meta_title:          row["Meta Title"],
       meta_description:    row["Meta Description"],
       name:                row["Product Name"],
