@@ -43,21 +43,21 @@ async function consume(data) {
     // Verify batchItem
     if (batchItem === null) {
       await BatchUploadService.update(batchItem._id, {
-        date_aborted: new Date,
+        date_aborted: new Date(),
         status:       BATCH_STATUS.ABORTED,
       })
       return new MessageResponse(`Couldn't fetch batch with ID: ${batchID}`, false, false)
     }
 
     await BatchUploadService.update(batchItem._id, {
-      date_started: new Date,
+      date_started: new Date(),
       status:       BATCH_STATUS.STARTED,
     })
 
     fileBuffer = await download(batchItem.file_url)
   } catch (err) {
     await BatchUploadService.update(batchItem._id, {
-      date_aborted: new Date,
+      date_aborted: new Date(),
       status:       BATCH_STATUS.ABORTED,
     })
     return new MessageResponse(`Couldn't fetch file: ${err}`, false, true)
@@ -90,7 +90,7 @@ async function consume(data) {
     // If validation has errors, save details into batch db and skip the insert
     if (validationErrors.length > 0) {
       await BatchUploadService.update(batchItem._id, {
-        date_aborted: new Date,
+        date_aborted: new Date(),
         status:       BATCH_STATUS.ABORTED,
         errors:       validationErrors,
       })
@@ -126,14 +126,14 @@ async function consume(data) {
     totalCount = insertedResponse.insertedCount
   } catch (err) {
     await BatchUploadService.update(batchItem._id, {
-      date_aborted: new Date,
+      date_aborted: new Date(),
       status:       BATCH_STATUS.ABORTED,
     })
     return new MessageResponse(`Error while creating products: ${err}`, false, true)
   }
 
   await BatchUploadService.update(batchItem._id, {
-    date_completed: new Date,
+    date_completed: new Date(),
     status:         BATCH_STATUS.COMPLETED,
   })
 
@@ -154,6 +154,7 @@ function getValidDocumentsForInsert(parsedData, categoryList) {
           return { name: attr.split(":")[1], value: row[attr] }
         }
       })
+      .filter(attr => attr !== undefined)
 
     // Build variants
     const variants = Object.getOwnPropertyNames(row)
