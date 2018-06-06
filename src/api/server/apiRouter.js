@@ -24,6 +24,7 @@ import FilesRoute from "./routes/files"
 import AppsRoute from "./routes/apps"
 import WebhooksRoute from "./routes/webhooks"
 import BatchesRoute from "./routes/batches"
+import InvalidRoute from "./routes/404"
 
 new ProductsRoute(apiRouter)
 new ProductCategoriesRoute(apiRouter)
@@ -45,5 +46,6 @@ new FilesRoute(apiRouter)
 new AppsRoute(apiRouter)
 new WebhooksRoute(apiRouter)
 new BatchesRoute(apiRouter)
+new InvalidRoute(apiRouter)
 
 module.exports = apiRouter
