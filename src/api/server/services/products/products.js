@@ -281,6 +281,7 @@ class ProductsService {
         weight:              1,
         dimensions:          1,
         attributes:          1,
+        variant_values:      1,
         date_stock_expected: 1,
         stock_tracking:      1,
         stock_preorder:      1,
@@ -664,6 +665,7 @@ class ProductsService {
     product.meta_title = parse.getString(data.meta_title)
     product.tags = parse.getArrayIfValid(data.tags) || []
     product.attributes = this.getValidAttributesArray(data.attributes)
+    product.variant_values = this.getValidVariantValuesArray(data.variant_values)
     product.enabled = parse.getBooleanIfValid(data.enabled, true)
     product.discontinued = parse.getBooleanIfValid(data.discontinued, false)
     product.slug = parse.getString(data.slug)
@@ -877,6 +879,19 @@ class ProductsService {
   getArrayOfObjectID(array) {
     if (array && Array.isArray(array)) {
       return array.map(item => parse.getObjectIDIfValid(item))
+    } else {
+      return []
+    }
+  }
+
+  getValidVariantValuesArray(variantValues) {
+    if (variantValues && Array.isArray(variantValues)) {
+      return variantValues
+        .filter(item => item.name && item.name !== "" && item.value && item.value !== "")
+        .map(item => ({
+          name:  parse.getString(item.name),
+          value: parse.getString(item.value),
+        }))
     } else {
       return []
     }

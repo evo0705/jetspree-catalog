@@ -156,14 +156,15 @@ function getValidDocumentsForInsert(parsedData, categoryList) {
       })
       .filter(attr => attr !== undefined)
 
-    // Build variants
-    const variants = Object.getOwnPropertyNames(row)
+    // Build variant_values
+    const variant_values = Object.getOwnPropertyNames(row)
       .filter(property => property.substring(0, 4) === "var:")
       .map(attr => {
         if (row[attr]) {
           return { name: attr.split(":")[1], value: row[attr] }
         }
       })
+      .filter(attr => attr !== undefined)
 
     return {
       sku:                 row["SKU"],
@@ -184,7 +185,7 @@ function getValidDocumentsForInsert(parsedData, categoryList) {
       price_or_exclusive:  row["Price or Exclusive"],
       images:              row["Image URLs"],
       attributes:          attributes,
-      variants:            variants,
+      variant_values:      variant_values,
       date_created:        new Date(),
       date_updated:        null,
       enabled:             true,
@@ -223,7 +224,7 @@ async function validateDataForInsert(documentToInsert, parsedData, categoryList)
   const validationErrors = []
   const requiredFields = [
     "SKU", "Slug", "Product ID", "Meta Title", "Meta Description", "Product Name", "Long Description", "Brand", "Category Name", "Image URLs", "Price",
-    "Commission %", "Duty Free", "Country Hints", "Price or Exclusive", "Stock Quantity"
+    "Commission %", "Duty Free", "Country Hints", "Price or Exclusive", "Stock Quantity",
   ]
 
   for (let index = 0; index < requiredFields.length; index++) {
