@@ -514,7 +514,7 @@ class ProductsService {
       })
     }
 
-    if (product_id && product_id.length > 0) {
+    if (product_id) {
       queries.push({
         product_id: product_id,
       })
