@@ -14,6 +14,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     onSubmit: (values) => {
       dispatch(updateProduct({
         id: values.id,
+        product_id: values.product_id,
         name: values.name,
         slug: values.slug,
         meta_title: values.meta_title,

@@ -59,6 +59,7 @@
   "products_title": "Products",
   "products_titleEdit": "Edit Product",
   "products_name": "Product name",
+  "products_id": "Product ID",
   "products_sku": "SKU",
   "products_stock": "Stock",
   "products_price": "Price",
