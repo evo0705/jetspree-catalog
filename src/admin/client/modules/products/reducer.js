@@ -109,6 +109,10 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, {
         editProductVariants: action.variants,
       })
+    case t.PRODUCT_VARIANT_VALUES_RECEIVE:
+      return Object.assign({}, state, {
+        editProductVariantValues: action.variantValues,
+      })
     case t.PRODUCT_OPTIONS_RECEIVE:
       return Object.assign({}, state, {
         editProductOptions: action.options,

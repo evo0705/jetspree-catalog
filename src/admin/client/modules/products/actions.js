@@ -37,6 +37,13 @@ function receiveVariants(variants) {
   }
 }
 
+function receiveVariantValues(variant_values) {
+  return {
+    type: t.PRODUCT_VARIANT_VALUES_RECEIVE,
+    variant_values
+  }
+}
+
 function receiveOptions(options) {
   return {
     type: t.PRODUCT_OPTIONS_RECEIVE,
@@ -433,6 +440,15 @@ export function fetchVariants(productId) {
       dispatch(receiveVariants(json))
     })
     .catch(error => {});
+  }
+}
+
+export function fetchVariantValues(productId) {
+  return (dispatch, getState) => {
+    return api.products.variantValues.list(productId).then(({status, json}) => {
+      dispatch(receiveVariantValues(json))
+    })
+      .catch(error => {});
   }
 }
 
