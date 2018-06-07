@@ -436,7 +436,7 @@ class ProductsService {
     ids = parse.getString(ids)
     tags = parse.getString(tags)
     slug = parse.getString(slug)
-    product_id = parse.getNumberIfPositive(product_id)
+    product_id = parse.getString(product_id)
 
     let queries = [{
       is_deleted: false,
