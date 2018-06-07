@@ -1,0 +1,76 @@
+.grid {}
+
+.gridHeadRow{
+  display: flex;
+  flex-flow: row wrap;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #a1a1a1;
+  align-items: center;
+  justify-content: space-around;
+  align-items: center;
+  text-align: center;
+  min-height: 60px;
+  cursor: default;
+}
+
+.gridRow {
+  display: flex;
+  flex-flow: row wrap;
+  width: 100%;
+  align-items: center;
+  justify-content: space-around;
+  align-items: center;
+  text-align: center;
+  border-bottom: 1px solid rgb(224, 224, 224);
+}
+
+.gridHeadRow a {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.gridRow {
+  display: flex;
+  flex-flow: row wrap;
+  width: 100%;
+  align-items: center;
+  justify-content: space-around;
+  align-items: center;
+  text-align: center;
+  border-bottom: 1px solid rgb(224, 224, 224);
+}
+
+.gridCol {
+  flex: 1 1;
+  overflow: hidden;
+}
+
+.gridRowCol {
+  flex: 1 1;
+  overflow: hidden;
+  padding: 15px 24px;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gridRowColRight {
+  flex: 1 1;
+  overflow: hidden;
+  padding: 15px 24px;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gridActionCol {
+  overflow: hidden;
+  padding: 15px;
+  width: 100px;
+}
+
+.innerBox {
+  padding: 30px;
+}
+
