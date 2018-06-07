@@ -54,6 +54,7 @@ class ProductsRoute {
     this.router.put("/v1/products/:productId/variants/:variantId/options", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.setVariantOption.bind(this))
 
     this.router.get("/v1/products_by_slug/:slug", security.checkUserScope.bind(this, security.scope.READ_PRODUCTS), this.getSingleProductBySlug.bind(this))
+    this.router.get("/v1/products_by_sku/:sku", security.checkUserScope.bind(this, security.scope.READ_PRODUCTS), this.getSingleProductBySku.bind(this))
   }
 
   getProducts(req, res, next) {
@@ -73,6 +74,15 @@ class ProductsRoute {
 
   async getSingleProductBySlug(req, res, next) {
     const product = await ProductsService.getSingleProductBySlug(req.params.slug);
+    if (product) {
+      res.send(product)
+    } else {
+      res.status(404).end()
+    }
+  }
+
+  async getSingleProductBySku(req, res, next) {
+    const product = await ProductsService.getSingleProductBySku(req.params.sku);
     if (product) {
       res.send(product)
     } else {

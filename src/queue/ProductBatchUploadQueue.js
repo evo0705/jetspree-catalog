@@ -157,14 +157,19 @@ function getValidDocumentsForInsert(parsedData, categoryList) {
       .filter(attr => attr !== undefined)
 
     // Build variant_values
-    const variant_values = Object.getOwnPropertyNames(row)
+    const variantsArray = Object.getOwnPropertyNames(row)
       .filter(property => property.substring(0, 4) === "var:")
-      .map(attr => {
-        if (row[attr]) {
-          return { name: attr.split(":")[1], value: row[attr] }
+      .map(variant => {
+        if (row[variant]) {
+          return { name: variant.split(":")[1], value: row[variant] }
         }
       })
       .filter(attr => attr !== undefined)
+
+    let variant_values = {}
+    variantsArray.forEach(variant => {
+      variant_values[variant.name] = variant.value
+    })
 
     return {
       sku:                 row["SKU"],
