@@ -425,6 +425,7 @@ class ProductsService {
       tags,
       slug,
       product_id,
+      country_hints,
     } = params
 
     // parse values
@@ -438,6 +439,7 @@ class ProductsService {
     tags = parse.getString(tags)
     slug = parse.getString(slug)
     product_id = parse.getString(product_id)
+    country_hints = parse.getString(country_hints)
 
     let queries = [{
       is_deleted: false,
@@ -539,6 +541,15 @@ class ProductsService {
     if (tags && tags.length > 0) {
       queries.push({
         tags: tags,
+      })
+    }
+
+    if (country_hints && country_hints.length > 0) {
+      const countriesArray = country_hints.split(",")
+      queries.push({
+        country_hints: {
+          $in: countriesArray,
+        },
       })
     }
 
