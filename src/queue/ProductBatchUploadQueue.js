@@ -197,7 +197,7 @@ function getValidDocumentsForInsert(parsedData, categoryList) {
       prices:              [],
       cost_price:          0,
       sale_price:          0,
-      service_fee:         5,
+      service_fee:         parse.getNumberIfValid(row["Service Fee"]) || 5,
       quantity_inc:        1,
       quantity_min:        1,
       weight:              0,
@@ -277,7 +277,7 @@ async function validateDataForInsert(documentToInsert, parsedData, categoryList)
         error.error_messages.push("Must be a boolean.")
       }
 
-      if (field === "Price or Exclusive" && fieldValue !== "price" && fieldValue !== "exclusive") {
+      if (field === "Price or Exclusive" && fieldValue !== "Price" && fieldValue !== "Exclusive") {
         error.error_messages.push("Not a valid value.")
       }
 
