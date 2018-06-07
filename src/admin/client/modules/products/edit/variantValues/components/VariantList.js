@@ -3,25 +3,27 @@ import Paper from "material-ui/Paper"
 import messages from "lib/text"
 import styles from "./VariantList.css"
 
-const VariantValueItem = ({ variantValue }) => {
+const VariantValueItem = ({ variantName, variantValue }) => {
   return (
     <div className={styles.gridRow}>
       <div className={styles.gridRowCol}>
-        {variantValue.name}
+        {variantName}
       </div>
       <div className={styles.gridRowCol}>
-        {variantValue.value}
+        {variantValue}
       </div>
     </div>
   )
 }
 
 const ProductVariantValuesGrid = ({ settings, options, variantValues }) => {
-  const hasVariantValues = variantValues && variantValues.length > 0
-  console.log(variantValues)
-  const variantValueRows = hasVariantValues ? variantValues.map((variantValue, index) => (
-    <VariantValueItem key={index} variantValue={variantValue}/>
-  )) : null
+  const hasVariantValues = variantValues && Object.getOwnPropertyNames(variantValues).length > 0
+  let variantValueRows = null
+  if (hasVariantValues) {
+    variantValueRows = Object.getOwnPropertyNames(variantValues).map((variantProperty, index) => (
+      <VariantValueItem key={index} variantName={variantProperty} variantValue={variantValues[variantProperty]}/>
+    ))
+  }
 
   return (
     <Paper className="paper-box" zDepth={1}>
