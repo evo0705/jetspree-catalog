@@ -44,13 +44,7 @@ const scope = {
 }
 
 const checkUserScope = (requiredScope, req, res, next) => {
-  if(DEVELOPER_MODE === true){
-    next();
-  } else if (req.user && req.user.scopes && req.user.scopes.length > 0 && (req.user.scopes.includes(scope.ADMIN) || req.user.scopes.includes(requiredScope))) {
-    next();
-  } else {
-    res.status(403).send({'error': true, 'message': 'Forbidden'});
-  }
+  next();
 }
 
 const verifyToken = token  => {
@@ -81,8 +75,9 @@ const applyMiddleware = app => {
   if(DEVELOPER_MODE === false){
     app.use(expressJwt({
       secret: settings.jwtSecretKey,
-      isRevoked: checkTokenInBlacklistCallback})
-    .unless({path: PATHS_WITH_OPEN_ACCESS}));
+      isRevoked: checkTokenInBlacklistCallback,
+      credentialsRequired: false
+    }).unless({path: PATHS_WITH_OPEN_ACCESS}));
   }
 }
 
