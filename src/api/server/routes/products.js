@@ -58,6 +58,13 @@ class ProductsRoute {
   }
 
   getProducts(req, res, next) {
+    const userIsAdmin = req.user && req.user.scopes && req.user.scopes.length > 0 && req.user.scopes.includes(security.scope.ADMIN)
+    if (userIsAdmin === false) {
+      req.query.enabled = true
+      req.query.discontinued = false
+      req.query.is_deleted = false
+    }
+
     ProductsService.getProducts(req.query).then(data => {
       res.send(data)
     }).catch(next)
