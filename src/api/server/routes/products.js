@@ -58,7 +58,8 @@ class ProductsRoute {
   }
 
   getProducts(req, res, next) {
-    if (req.user && req.user.scopes && req.user.scopes.length > 0 && req.user.scopes.includes(security.scope.ADMIN)) {
+    const userIsAdmin = req.user && req.user.scopes && req.user.scopes.length > 0 && req.user.scopes.includes(security.scope.ADMIN)
+    if (userIsAdmin === true) {
       delete req.query.enabled
       delete req.query.discontinued
       delete req.query.is_deleted
