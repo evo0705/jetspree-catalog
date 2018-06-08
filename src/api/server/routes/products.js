@@ -58,6 +58,16 @@ class ProductsRoute {
   }
 
   getProducts(req, res, next) {
+    if (req.user && req.user.scopes && req.user.scopes.length > 0 && req.user.scopes.includes(security.scope.ADMIN)) {
+      delete req.query.enabled
+      delete req.query.discontinued
+      delete req.query.is_deleted
+    } else {
+      req.query.enabled = true
+      req.query.discontinued = false
+      req.query.is_deleted = false
+    }
+
     ProductsService.getProducts(req.query).then(data => {
       res.send(data)
     }).catch(next)
