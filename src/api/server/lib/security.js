@@ -44,7 +44,13 @@ const scope = {
 }
 
 const checkUserScope = (requiredScope, req, res, next) => {
-  next();
+  if(DEVELOPER_MODE === true){
+    next();
+  } else if (req.user && req.user.scopes && req.user.scopes.length > 0 && (req.user.scopes.includes(scope.ADMIN) || req.user.scopes.includes(requiredScope))) {
+    next();
+  } else {
+    res.status(403).send({'error': true, 'message': 'Forbidden'});
+  }
 }
 
 const verifyToken = token  => {
