@@ -91,11 +91,22 @@ const getAccessControlAllowOrigin = () => {
   return settings.storeBaseUrl || '*';
 }
 
+const checkIfUserIsAdmin = (req, res, next) => {
+  const userIsAdmin = req.user && req.user.scopes && req.user.scopes.length > 0 && req.user.scopes.includes(scope.ADMIN)
+  if(userIsAdmin) {
+    req.userIsAdmin = true
+  } else {
+    req.userIsAdmin = false
+  }
+  next()
+}
+
 module.exports = {
   checkUserScope: checkUserScope,
   scope: scope,
   verifyToken: verifyToken,
   applyMiddleware: applyMiddleware,
   getAccessControlAllowOrigin: getAccessControlAllowOrigin,
-  DEVELOPER_MODE: DEVELOPER_MODE
+  DEVELOPER_MODE: DEVELOPER_MODE,
+  checkIfUserIsAdmin: checkIfUserIsAdmin
 }

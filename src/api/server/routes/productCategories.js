@@ -15,7 +15,7 @@ class ProductCategoriesRoute {
   }
 
   registerRoutes() {
-    this.router.get("/v1/product_categories", this.getCategories.bind(this))
+    this.router.get("/v1/product_categories", security.checkIfUserIsAdmin.bind(this), this.getCategories.bind(this))
     this.router.post("/v1/product_categories", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCT_CATEGORIES), this.addCategory.bind(this))
     this.router.get("/v1/product_categories/:id", security.checkUserScope.bind(this, security.scope.READ_PRODUCT_CATEGORIES), this.getSingleCategory.bind(this))
     this.router.put("/v1/product_categories/:id", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCT_CATEGORIES), this.updateCategory.bind(this))
@@ -23,12 +23,11 @@ class ProductCategoriesRoute {
     this.router.post("/v1/product_categories/:id/image", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCT_CATEGORIES), this.assignUploadType.bind(this), this.uploadCategoryImage.bind(this))
     this.router.delete("/v1/product_categories/:id/image", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCT_CATEGORIES), this.deleteCategoryImage.bind(this))
 
-    this.router.get("/v1/product_categories_by_slug/:slug", this.getSingleCategoryBySlug.bind(this))
+    this.router.get("/v1/product_categories_by_slug/:slug", security.checkIfUserIsAdmin.bind(this), this.getSingleCategoryBySlug.bind(this))
   }
 
   getCategories(req, res, next) {
-    const userIsAdmin = req.user && req.user.scopes && req.user.scopes.length > 0 && req.user.scopes.includes(security.scope.ADMIN)
-    if (userIsAdmin === true) {
+    if (req.userIsAdmin === true) {
       return this.getCategoriesForAdmin(req, res, next)
     } else {
       return this.getCategoriesForAnonymous(req, res, next)
@@ -64,8 +63,7 @@ class ProductCategoriesRoute {
   }
 
   getSingleCategoryBySlug(req, res, next) {
-    const userIsAdmin = req.user && req.user.scopes && req.user.scopes.length > 0 && req.user.scopes.includes(security.scope.ADMIN)
-    if (userIsAdmin === true) {
+    if (req.userIsAdmin === true) {
       return this.getSingleCategoryBySlugForAdmin(req, res, next)
     } else {
       return this.getSingleCategoryBySlugForAnonymous(req, res, next)

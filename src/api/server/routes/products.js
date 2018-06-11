@@ -21,10 +21,10 @@ class ProductsRoute {
   }
 
   registerRoutes() {
-    this.router.get("/v1/products", this.getProducts.bind(this))
+    this.router.get("/v1/products", security.checkIfUserIsAdmin.bind(this), this.getProducts.bind(this))
     this.router.post("/v1/products", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.addProduct.bind(this))
     this.router.post("/v1/products/import", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.addProducts.bind(this))
-    this.router.get("/v1/products/:productId", this.getSingleProduct.bind(this))
+    this.router.get("/v1/products/:productId", security.checkIfUserIsAdmin.bind(this), this.getSingleProduct.bind(this))
     this.router.put("/v1/products/:productId", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.updateProduct.bind(this))
     this.router.delete("/v1/products/:productId", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.deleteProduct.bind(this))
 
@@ -54,13 +54,12 @@ class ProductsRoute {
     this.router.delete("/v1/products/:productId/variants/:variantId", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.deleteVariant.bind(this))
     this.router.put("/v1/products/:productId/variants/:variantId/options", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.setVariantOption.bind(this))
 
-    this.router.get("/v1/products_by_slug/:slug", this.getSingleProductBySlug.bind(this))
-    this.router.get("/v1/products_by_sku/:sku", this.getSingleProductBySku.bind(this))
+    this.router.get("/v1/products_by_slug/:slug", security.checkIfUserIsAdmin.bind(this), this.getSingleProductBySlug.bind(this))
+    this.router.get("/v1/products_by_sku/:sku", security.checkIfUserIsAdmin.bind(this), this.getSingleProductBySku.bind(this))
   }
 
   getProducts(req, res, next) {
-    const userIsAdmin = req.user && req.user.scopes && req.user.scopes.length > 0 && req.user.scopes.includes(security.scope.ADMIN)
-    if (userIsAdmin === true) {
+    if (req.userIsAdmin === true) {
       return this.getProductsForAdmin(req, res, next)
     } else {
       return this.getProductsForAnonymous(req, res, next)
@@ -86,8 +85,7 @@ class ProductsRoute {
   }
 
   async getSingleProduct(req, res, next) {
-    const userIsAdmin = req.user && req.user.scopes && req.user.scopes.length > 0 && req.user.scopes.includes(security.scope.ADMIN)
-    if (userIsAdmin === true) {
+    if (req.userIsAdmin === true) {
       return this.getSingleProductForAdmin(req, res, next)
     } else {
       return this.getSingleProductForAnonymous(req, res, next)
@@ -113,8 +111,7 @@ class ProductsRoute {
   }
 
   async getSingleProductBySlug(req, res, next) {
-    const userIsAdmin = req.user && req.user.scopes && req.user.scopes.length > 0 && req.user.scopes.includes(security.scope.ADMIN)
-    if (userIsAdmin === true) {
+    if (req.userIsAdmin === true) {
       return this.getSingleProductBySlugForAdmin(req, res, next)
     } else {
       return this.getSingleProductBySlugForAnonymous(req, res, next)
@@ -140,8 +137,7 @@ class ProductsRoute {
   }
 
   async getSingleProductBySku(req, res, next) {
-    const userIsAdmin = req.user && req.user.scopes && req.user.scopes.length > 0 && req.user.scopes.includes(security.scope.ADMIN)
-    if (userIsAdmin === true) {
+    if (req.userIsAdmin === true) {
       return this.getSingleProductBySkuForAdmin(req, res, next)
     } else {
       return this.getSingleProductBySkuForAnonymous(req, res, next)
