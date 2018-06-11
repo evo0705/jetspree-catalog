@@ -1,12 +1,6 @@
 // config used by server side only
 
-const dbHost = process.env.DB_HOST || '127.0.0.1';
-const dbPort = process.env.DB_PORT || 27017;
-const dbName = process.env.DB_NAME || 'shop'
-const dbUser = process.env.DB_USER || '';
-const dbPass = process.env.DB_PASS || '';
-const dbCred = dbUser.length > 0 || dbPass.length > 0 ? `${dbUser}:${dbPass}@` : '';
-const dbUrl = `mongodb://${dbCred}${dbHost}:${dbPort}/${dbName}`;
+const dbUrl =  process.env.MONGODB_URI || `mongodb://127.0.0.1:27017/shop`;
 
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3001/api/v1';
 const AJAX_BASE_URL = process.env.AJAX_BASE_URL || 'http://localhost:3001/ajax';
