@@ -6,6 +6,7 @@ const upload = multer({ storage: storage })
 const security = require("../lib/security")
 const settings = require("../lib/settings")
 const CategoriesService = require("../services/products/productCategories")
+const CategoriesAnonymousService = require("../services/products/CategoriesAnonymousService")
 
 class ProductCategoriesRoute {
   constructor(router) {
@@ -14,7 +15,7 @@ class ProductCategoriesRoute {
   }
 
   registerRoutes() {
-    this.router.get("/v1/product_categories", security.checkUserScope.bind(this, security.scope.READ_PRODUCT_CATEGORIES), this.getCategories.bind(this))
+    this.router.get("/v1/product_categories", security.checkIfUserIsAdmin.bind(this), this.getCategories.bind(this))
     this.router.post("/v1/product_categories", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCT_CATEGORIES), this.addCategory.bind(this))
     this.router.get("/v1/product_categories/:id", security.checkUserScope.bind(this, security.scope.READ_PRODUCT_CATEGORIES), this.getSingleCategory.bind(this))
     this.router.put("/v1/product_categories/:id", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCT_CATEGORIES), this.updateCategory.bind(this))
@@ -22,13 +23,33 @@ class ProductCategoriesRoute {
     this.router.post("/v1/product_categories/:id/image", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCT_CATEGORIES), this.assignUploadType.bind(this), this.uploadCategoryImage.bind(this))
     this.router.delete("/v1/product_categories/:id/image", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCT_CATEGORIES), this.deleteCategoryImage.bind(this))
 
-    this.router.get("/v1/product_categories_by_slug/:slug", security.checkUserScope.bind(this, security.scope.READ_PRODUCT_CATEGORIES), this.getSingleCategoryBySlug.bind(this))
+    this.router.get("/v1/product_categories_by_slug/:slug", security.checkIfUserIsAdmin.bind(this), this.getSingleCategoryBySlug.bind(this))
   }
 
   getCategories(req, res, next) {
-    CategoriesService.getCategories(req.query).then((data) => {
-      res.send(data)
-    }).catch(next)
+    if (req.userIsAdmin === true) {
+      return this.getCategoriesForAdmin(req, res, next)
+    } else {
+      return this.getCategoriesForAnonymous(req, res, next)
+    }
+  }
+
+  async getCategoriesForAnonymous(req, res, next) {
+    try {
+      const categories = await CategoriesAnonymousService.getCategories(req.query)
+      res.send(categories)
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  async getCategoriesForAdmin(req, res, next) {
+    try {
+      const categories = await CategoriesService.getCategories(req.query)
+      res.send(categories)
+    } catch (err) {
+      next(err)
+    }
   }
 
   getSingleCategory(req, res, next) {
@@ -42,13 +63,37 @@ class ProductCategoriesRoute {
   }
 
   getSingleCategoryBySlug(req, res, next) {
-    CategoriesService.getSingleCategoryBySlug(req.params.slug).then((data) => {
-      if (data) {
-        res.send(data)
+    if (req.userIsAdmin === true) {
+      return this.getSingleCategoryBySlugForAdmin(req, res, next)
+    } else {
+      return this.getSingleCategoryBySlugForAnonymous(req, res, next)
+    }
+  }
+
+  async getSingleCategoryBySlugForAnonymous(req, res, next) {
+    try {
+      const category = await CategoriesAnonymousService.getSingleCategoryBySlug(req.params.slug)
+      if (category) {
+        res.send(category)
       } else {
         res.status(404).end()
       }
-    }).catch(next)
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  async getSingleCategoryBySlugForAdmin(req, res, next) {
+    try {
+      const category = await CategoriesService.getSingleCategoryBySlug(req.params.slug)
+      if (category) {
+        res.send(category)
+      } else {
+        res.status(404).end()
+      }
+    } catch (err) {
+      next(err)
+    }
   }
 
   addCategory(req, res, next) {

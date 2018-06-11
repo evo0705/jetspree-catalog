@@ -81,13 +81,24 @@ const applyMiddleware = app => {
   if(DEVELOPER_MODE === false){
     app.use(expressJwt({
       secret: settings.jwtSecretKey,
-      isRevoked: checkTokenInBlacklistCallback})
-    .unless({path: PATHS_WITH_OPEN_ACCESS}));
+      isRevoked: checkTokenInBlacklistCallback,
+      credentialsRequired: false
+    }).unless({path: PATHS_WITH_OPEN_ACCESS}));
   }
 }
 
 const getAccessControlAllowOrigin = () => {
   return settings.storeBaseUrl || '*';
+}
+
+const checkIfUserIsAdmin = (req, res, next) => {
+  const userIsAdmin = req.user && req.user.scopes && req.user.scopes.length > 0 && req.user.scopes.includes(scope.ADMIN)
+  if(userIsAdmin) {
+    req.userIsAdmin = true
+  } else {
+    req.userIsAdmin = false
+  }
+  next()
 }
 
 module.exports = {
@@ -96,5 +107,6 @@ module.exports = {
   verifyToken: verifyToken,
   applyMiddleware: applyMiddleware,
   getAccessControlAllowOrigin: getAccessControlAllowOrigin,
-  DEVELOPER_MODE: DEVELOPER_MODE
+  DEVELOPER_MODE: DEVELOPER_MODE,
+  checkIfUserIsAdmin: checkIfUserIsAdmin
 }

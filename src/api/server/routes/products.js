@@ -8,6 +8,7 @@ const ObjectID = require("mongodb").ObjectID
 const security = require("../lib/security")
 const settings = require("../lib/settings")
 const ProductsService = require("../services/products/products")
+const ProductsAnonymousService = require("../services/products/ProductsAnonymousService")
 const ProductOptionsService = require("../services/products/options")
 const ProductOptionValuesService = require("../services/products/optionValues")
 const ProductVariantsService = require("../services/products/variants")
@@ -20,10 +21,10 @@ class ProductsRoute {
   }
 
   registerRoutes() {
-    this.router.get("/v1/products", security.checkUserScope.bind(this, security.scope.READ_PRODUCTS), this.getProducts.bind(this))
+    this.router.get("/v1/products", security.checkIfUserIsAdmin.bind(this), this.getProducts.bind(this))
     this.router.post("/v1/products", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.addProduct.bind(this))
     this.router.post("/v1/products/import", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.addProducts.bind(this))
-    this.router.get("/v1/products/:productId", security.checkUserScope.bind(this, security.scope.READ_PRODUCTS), this.getSingleProduct.bind(this))
+    this.router.get("/v1/products/:productId", security.checkIfUserIsAdmin.bind(this), this.getSingleProduct.bind(this))
     this.router.put("/v1/products/:productId", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.updateProduct.bind(this))
     this.router.delete("/v1/products/:productId", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.deleteProduct.bind(this))
 
@@ -53,24 +54,54 @@ class ProductsRoute {
     this.router.delete("/v1/products/:productId/variants/:variantId", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.deleteVariant.bind(this))
     this.router.put("/v1/products/:productId/variants/:variantId/options", security.checkUserScope.bind(this, security.scope.WRITE_PRODUCTS), this.setVariantOption.bind(this))
 
-    this.router.get("/v1/products_by_slug/:slug", security.checkUserScope.bind(this, security.scope.READ_PRODUCTS), this.getSingleProductBySlug.bind(this))
-    this.router.get("/v1/products_by_sku/:sku", security.checkUserScope.bind(this, security.scope.READ_PRODUCTS), this.getSingleProductBySku.bind(this))
+    this.router.get("/v1/products_by_slug/:slug", security.checkIfUserIsAdmin.bind(this), this.getSingleProductBySlug.bind(this))
+    this.router.get("/v1/products_by_sku/:sku", security.checkIfUserIsAdmin.bind(this), this.getSingleProductBySku.bind(this))
   }
 
   getProducts(req, res, next) {
-    const userIsAdmin = req.user && req.user.scopes && req.user.scopes.length > 0 && req.user.scopes.includes(security.scope.ADMIN)
-    if (userIsAdmin === false) {
-      req.query.enabled = true
-      req.query.discontinued = false
-      req.query.is_deleted = false
+    if (req.userIsAdmin === true) {
+      return this.getProductsForAdmin(req, res, next)
+    } else {
+      return this.getProductsForAnonymous(req, res, next)
     }
+  }
 
-    ProductsService.getProducts(req.query).then(data => {
-      res.send(data)
-    }).catch(next)
+  async getProductsForAnonymous(req, res, next) {
+    try {
+      const products = await ProductsAnonymousService.getProducts(req.query)
+      res.send(products)
+    } catch(err) {
+      next(err)
+    }
+  }
+
+  async getProductsForAdmin(req, res, next) {
+    try {
+      const products = await ProductsService.getProducts(req.query)
+      res.send(products)
+    } catch(err) {
+      next(err)
+    }
   }
 
   async getSingleProduct(req, res, next) {
+    if (req.userIsAdmin === true) {
+      return this.getSingleProductForAdmin(req, res, next)
+    } else {
+      return this.getSingleProductForAnonymous(req, res, next)
+    }
+  }
+
+  async getSingleProductForAnonymous(req, res, next) {
+    const product = await ProductsAnonymousService.getSingleProduct(req.params.productId);
+    if (product) {
+      res.send(product)
+    } else {
+      res.status(404).end()
+    }
+  }
+
+  async getSingleProductForAdmin(req, res, next) {
     const product = await ProductsService.getSingleProduct(req.params.productId);
     if (product) {
       res.send(product)
@@ -80,6 +111,23 @@ class ProductsRoute {
   }
 
   async getSingleProductBySlug(req, res, next) {
+    if (req.userIsAdmin === true) {
+      return this.getSingleProductBySlugForAdmin(req, res, next)
+    } else {
+      return this.getSingleProductBySlugForAnonymous(req, res, next)
+    }
+  }
+
+  async getSingleProductBySlugForAnonymous(req, res, next) {
+    const product = await ProductsAnonymousService.getSingleProductBySlug(req.params.slug);
+    if (product) {
+      res.send(product)
+    } else {
+      res.status(404).end()
+    }
+  }
+
+  async getSingleProductBySlugForAdmin(req, res, next) {
     const product = await ProductsService.getSingleProductBySlug(req.params.slug);
     if (product) {
       res.send(product)
@@ -89,6 +137,23 @@ class ProductsRoute {
   }
 
   async getSingleProductBySku(req, res, next) {
+    if (req.userIsAdmin === true) {
+      return this.getSingleProductBySkuForAdmin(req, res, next)
+    } else {
+      return this.getSingleProductBySkuForAnonymous(req, res, next)
+    }
+  }
+
+  async getSingleProductBySkuForAnonymous(req, res, next) {
+    const product = await ProductsAnonymousService.getSingleProductBySku(req.params.sku);
+    if (product) {
+      res.send(product)
+    } else {
+      res.status(404).end()
+    }
+  }
+
+  async getSingleProductBySkuForAdmin(req, res, next) {
     const product = await ProductsService.getSingleProductBySku(req.params.sku);
     if (product) {
       res.send(product)
