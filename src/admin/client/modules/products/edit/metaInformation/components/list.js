@@ -1,7 +1,7 @@
 import React from "react"
 import Paper from "material-ui/Paper"
 
-const MetaInformationItem = ({ variantName, variantValue }) => {
+const MetaDataItem = ({ variantName, variantValue }) => {
   return (
     <div className="row row--no-gutter middle-xs" style={{ borderBottom: "1px solid rgb(224, 224, 224)" }}>
       <div className="col-xs-4 col--no-gutter" style={{ padding: "20px" }}>
@@ -14,18 +14,18 @@ const MetaInformationItem = ({ variantName, variantValue }) => {
   )
 }
 
-const MetaInformationGrid = ({ metaInformation }) => {
-  let metaInformationNodes
-  if (metaInformation) {
-    metaInformationNodes = metaInformation.map((row, index) => <MetaInformationItem key={index} variantName={row.name}
+const MetaDataGrid = ({ metadata }) => {
+  let metadataNodes
+  if (metadata) {
+    metadataNodes = metadata.map((row, index) => <MetaDataItem key={index} variantName={row.name}
                                                                                     variantValue={row.value}/>)
   }
 
   return (
     <Paper className="paper-box" zDepth={1}>
-      {metaInformationNodes}
+      {metadataNodes}
     </Paper>
   )
 }
 
-export default MetaInformationGrid
+export default MetaDataGrid

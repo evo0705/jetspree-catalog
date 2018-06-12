@@ -196,7 +196,7 @@ function getValidDocumentsForUpdate(parsedData, categoryList) {
     })
 
     // Build meta information
-    const metaInformation = Object.getOwnPropertyNames(row)
+    const metadata = Object.getOwnPropertyNames(row)
       .filter(property => property.substring(0, 5) === "meta:")
       .map(attr => {
         if (row[attr]) {
@@ -255,7 +255,7 @@ function getValidDocumentsForUpdate(parsedData, categoryList) {
       },
       options:             [],
       is_deleted:          false,
-      meta_information:    metaInformation,
+      metadata: metadata,
     }
   })
 }
