@@ -269,6 +269,7 @@ class ProductsService {
         quantity_min:        1,
         meta_description:    1,
         meta_title:          1,
+        meta_information:    1,
         name:                1,
         description:         1,
         sku:                 1,
@@ -686,6 +687,7 @@ class ProductsService {
     product.meta_title = parse.getString(data.meta_title)
     product.tags = parse.getArrayIfValid(data.tags) || []
     product.attributes = this.getValidAttributesArray(data.attributes)
+    product.meta_information = this.getValidMetaInformationArray(data.meta_information)
     product.variant_values = parse.getObjectIfValid(data.variant_values)
     product.enabled = parse.getBooleanIfValid(data.enabled, true)
     product.discontinued = parse.getBooleanIfValid(data.discontinued, false)
@@ -901,6 +903,19 @@ class ProductsService {
   getArrayOfObjectID(array) {
     if (array && Array.isArray(array)) {
       return array.map(item => parse.getObjectIDIfValid(item))
+    } else {
+      return []
+    }
+  }
+
+  getValidMetaInformationArray(metaInformation) {
+    if (metaInformation && Array.isArray(metaInformation)) {
+      return metaInformation
+        .filter(item => item.name && item.name !== "" && item.value && item.value !== "")
+        .map(item => ({
+          name:  parse.getString(item.name),
+          value: parse.getString(item.value),
+        }))
     } else {
       return []
     }

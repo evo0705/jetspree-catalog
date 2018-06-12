@@ -171,6 +171,16 @@ function getValidDocumentsForInsert(parsedData, categoryList) {
       variant_values[variant.name] = variant.value
     })
 
+    // Build meta information
+    const metaInformation = Object.getOwnPropertyNames(row)
+      .filter(property => property.substring(0, 5) === "meta:")
+      .map(attr => {
+        if (row[attr]) {
+          return { name: attr.split(":")[1], value: row[attr] }
+        }
+      })
+      .filter(attr => attr !== undefined)
+
     return {
       sku:                 row["SKU"],
       slug:                row["Slug"],
@@ -221,6 +231,7 @@ function getValidDocumentsForInsert(parsedData, categoryList) {
       },
       options:             [],
       is_deleted:          false,
+      meta_information:    metaInformation,
     }
   })
 }
